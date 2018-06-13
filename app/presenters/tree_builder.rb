@@ -534,6 +534,7 @@ class TreeBuilder
     "cl"   => "Classification",
     "cf"   => "ConfigurationScript",
     "cfp"  => "ConfigurationScriptPayload",
+    "cw"   => "ConfigurationWorkflow",
     "cnt"  => "Container",
     "co"   => "Condition",
     "cbg"  => "CustomButtonSet",
