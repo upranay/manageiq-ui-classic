@@ -80,7 +80,7 @@ angular.module('miq.util').factory('chartsMixin', ['$document', function($docume
       chartId: 'recentResourcesChart',
       tooltip: {
         contents: dailyTimeTooltip,
-        position: lineChartTooltipPositionFactory('recentResourcesChart'),
+        position: lineChartTooltipPositionFactory,
       },
       point: {r: 1},
       size: {height: 145},
