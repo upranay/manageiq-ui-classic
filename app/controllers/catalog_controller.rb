@@ -823,6 +823,7 @@ class CatalogController < ApplicationController
     prov_type = params[:st_prov_type] ? params[:st_prov_type] : @record.prov_type
     ansible_playbook = prov_type == "generic_ansible_playbook"
     @current_region = MiqRegion.my_region.region if ansible_playbook
+    @available_catalogs = available_catalogs.sort # Get available catalogs with tenants and ancestors
     ansible_playbook
   end
   helper_method :ansible_playbook?
