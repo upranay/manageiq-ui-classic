@@ -27,6 +27,3 @@ cmdline = ["node", "--max_old_space_size=2048", WEBPACK_BIN, "--config", WEBPACK
 Dir.chdir(APP_PATH) do
   exec newenv, *cmdline
 end
-
-## In case of node OOM errors:
-# NODE_ENV=development node --max_old_space_size=2048 node_modules/.bin/webpack --config config/webpack/development.js
