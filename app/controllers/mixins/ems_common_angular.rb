@@ -7,6 +7,8 @@ module Mixins
 
     OPENSTACK_PARAMS = %i(name provider_region api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port default_userid event_stream_selection).freeze
     OPENSTACK_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port amqp_userid event_stream_selection).freeze
+    TELEFONICA_PARAMS = %i(name provider_region api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port default_userid event_stream_selection).freeze
+    TELEFONICA_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port amqp_userid event_stream_selection).freeze
 
     included do
       include Mixins::GenericFormMixin
@@ -127,6 +129,10 @@ module Mixins
       when 'ManageIQ::Providers::Openstack::CloudManager', 'ManageIQ::Providers::Openstack::InfraManager'
         connect_opts = [password, params.to_hash.symbolize_keys.slice(*OPENSTACK_PARAMS)] if params[:cred_type] == "default"
         connect_opts = [MiqPassword.encrypt(params[:amqp_password]), params.to_hash.symbolize_keys.slice(*OPENSTACK_AMQP_PARAMS)] if params[:cred_type] == "amqp"
+        connect_opts
+      when 'ManageIQ::Providers::Telefonica::CloudManager', 'ManageIQ::Providers::Telefonica::InfraManager'
+        connect_opts = [password, params.to_hash.symbolize_keys.slice(*TELEFONICA_PARAMS)] if params[:cred_type] == "default"
+        connect_opts = [MiqPassword.encrypt(params[:amqp_password]), params.to_hash.symbolize_keys.slice(*TELEFONICA_AMQP_PARAMS)] if params[:cred_type] == "amqp"
         connect_opts
       when 'ManageIQ::Providers::Amazon::CloudManager'
         uri = URI.parse(WEBrick::HTTPUtils.escape(params[:default_url]))
@@ -373,6 +379,7 @@ module Mixins
                        :amqp_security_protocol          => amqp_security_protocol,
                        :provider_region                 => @ems.provider_region,
                        :openstack_infra_providers_exist => retrieve_openstack_infra_providers.length > 0,
+                       :telefonica_infra_providers_exist => retrieve_telefonica_infra_providers.length > 0,
                        :default_userid                  => @ems.authentication_userid.to_s,
                        :amqp_userid                     => amqp_userid,
                        :smartstate_docker_userid        => smartstate_docker_userid,
@@ -564,7 +571,21 @@ module Mixins
         end
       end
 
+      if ems.kind_of?(ManageIQ::Providers::Telefonica::CloudManager) || ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager)
+        default_endpoint = {:role => :default, :hostname => hostname, :port => port, :security_protocol => ems.security_protocol}
+        ems.keystone_v3_domain_id = params[:keystone_v3_domain_id]
+        if params[:event_stream_selection] == "amqp"
+          amqp_endpoint = {:role => :amqp, :hostname => amqp_hostname, :port => amqp_port, :security_protocol => amqp_security_protocol}
+        else
+          ceilometer_endpoint = {:role => :ceilometer}
+        end
+      end
+
       if ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)
+        ssh_keypair_endpoint = {:role => :ssh_keypair}
+      end
+
+      if ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager) || ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)
         ssh_keypair_endpoint = {:role => :ssh_keypair}
       end
 
@@ -760,6 +781,11 @@ module Mixins
         ssh_keypair_password = params[:ssh_keypair_password] ? params[:ssh_keypair_password].gsub(/\r\n/, "\n") : ems.authentication_key(:ssh_keypair)
         creds[:ssh_keypair] = {:userid => params[:ssh_keypair_userid], :auth_key => ssh_keypair_password, :save => (mode != :validate)}
       end
+      if ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager) &&
+         ems.supports_authentication?(:ssh_keypair) && params[:ssh_keypair_userid]
+        ssh_keypair_password = params[:ssh_keypair_password] ? params[:ssh_keypair_password].gsub(/\r\n/, "\n") : ems.authentication_key(:ssh_keypair)
+        creds[:ssh_keypair] = {:userid => params[:ssh_keypair_userid], :auth_key => ssh_keypair_password, :save => (mode != :validate)}
+      end
       if ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager) &&
          ems.supports_authentication?(:ssh_keypair) && params[:ssh_keypair_userid]
         ssh_keypair_password = params[:ssh_keypair_password] ? params[:ssh_keypair_password].gsub(/\r\n/, "\n") : ems.authentication_key(:ssh_keypair)
@@ -812,7 +838,8 @@ module Mixins
     def retrieve_event_stream_selection
       return 'amqp' if @ems.connection_configurations.amqp&.endpoint&.hostname&.present?
       return 'ceilometer' if @ems.connection_configurations.ceilometer&.endpoint&.hostname&.present?
-      @ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) || @ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) ? 'ceilometer' : 'none'
+      @ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) || @ems.kind_of?(ManageIQ::Providers::Telefonica::CloudManager)
+       || @ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || @ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager) ? 'ceilometer' : 'none'
     end
 
     def construct_edit_for_audit(ems)

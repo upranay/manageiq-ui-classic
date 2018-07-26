@@ -436,6 +436,7 @@ class HostController < ApplicationController
       %i(
         compliance security configuration diagnostics smart_management miq_custom_attributes
         ems_custom_attributes authentications cloud_services openstack_hardware_status openstack_service_status
+        teelfonica_hardware_status telefonica_service_status
       )
     ]
   end

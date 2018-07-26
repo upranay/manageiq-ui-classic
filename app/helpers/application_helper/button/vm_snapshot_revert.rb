@@ -2,7 +2,7 @@ class ApplicationHelper::Button::VmSnapshotRevert < ApplicationHelper::Button::B
   needs :@record, :@active
 
   def visible?
-    return false if @record.kind_of?(ManageIQ::Providers::Openstack::CloudManager::Vm)
+    return false if @record.kind_of?(ManageIQ::Providers::Openstack::CloudManager::Vm) || @record.kind_of?(ManageIQ::Providers::Telefonica::CloudManager::Vm)
     super
   end
 

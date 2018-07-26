@@ -67,8 +67,8 @@ class EmsInfraDashboardService < DashboardService
     }
 
     attr_hsh = {
-      :ems_clusters  => @ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) ? _('Deployment Roles') : _('Clusters'),
-      :hosts         => @ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) ? _('Nodes') : _('Hosts'),
+      :ems_clusters  => (@ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || @ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager)) ? _('Deployment Roles') : _('Clusters'),
+      :hosts         => (@ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || @ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager)) ? _('Nodes') : _('Hosts'),
       :storages      => _('Datastores'),
       :vms           => _('VMs'),
       :miq_templates => _('Templates'),
@@ -136,7 +136,7 @@ class EmsInfraDashboardService < DashboardService
     {
       :clusterCpuUsage    => cluster_cpu_usage.presence,
       :clusterMemoryUsage => cluster_memory_usage.presence,
-      :title              => openstack? ? _('Deployment Roles Utilization') : _('Cluster Utilization')
+      :title              => (openstack? || telefonica?) ? _('Deployment Roles Utilization') : _('Cluster Utilization')
     }
   end
 
@@ -144,8 +144,8 @@ class EmsInfraDashboardService < DashboardService
     # Get recent hosts
     all_hosts = recentRecords(Host)
     config = {
-      :title => openstack? ? _('Recent Nodes') : _('Recent Hosts'),
-      :label => openstack? ? _('Nodes') : _('Hosts')
+      :title => (openstack? || telefonica?) ? _('Recent Nodes') : _('Recent Hosts'),
+      :label => (openstack? || telefonica?) ? _('Nodes') : _('Hosts')
     }
     return { :dataAvailable => false, :config => config} if all_hosts.blank?
     {
@@ -211,6 +211,10 @@ class EmsInfraDashboardService < DashboardService
 
   def openstack?
     @ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager)
+  end
+
+  def telefonica?
+    @ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager)
   end
 
   def get_url(ems_id, attr_url)

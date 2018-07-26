@@ -44,11 +44,66 @@ module EmsClusterHelper::TextualSummary
     ret.blank? ? nil : TextualMultilink.new(_("OpenStack Status"), :items => ret)
   end
 
+  def textual_group_telefonica_status
+    return nil unless @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::EmsCluster)
+    ret = textual_generate_telefonica_status
+
+    ret.blank? ? nil : TextualMultilink.new(_("Telefonica Status"), :items => ret)
+  end
+
   #
   # Items
   #
 
   def textual_generate_openstack_status
+    @record.service_group_names.collect do |x|
+      running_count = @record.host_ids_with_running_service_group(x.name).count
+      failed_count  = @record.host_ids_with_failed_service_group(x.name).count
+      all_count     = @record.host_ids_with_service_group(x.name).count
+
+      running = {:title => _("Show list of hosts with running %{name}") % {:name => x.name},
+                 :value => _("Running (%{number})") % {:number => running_count},
+                 :icon  => failed_count == 0 && running_count > 0 ? 'pficon pficon-ok' : nil,
+                 :link  => if running_count > 0
+                             url_for_only_path(:controller              => controller.controller_name,
+                                     :action                  => 'show',
+                                     :id                      => @record,
+                                     :display                 => 'hosts',
+                                     :host_service_group_name => x.name,
+                                     :status                  => :running)
+                           end}
+
+      failed = {:title => _("Show list of hosts with failed %{name}") % {:name => x.name},
+                :value => _("Failed (%{number})") % {:number => failed_count},
+                :icon  => failed_count > 0 ? 'pficon pficon-error-circle-o' : nil,
+                :link  => if failed_count > 0
+                            url_for_only_path(:controller              => controller.controller_name,
+                                    :action                  => 'show',
+                                    :id                      => @record,
+                                    :display                 => 'hosts',
+                                    :host_service_group_name => x.name,
+                                    :status                  => :failed)
+                          end}
+
+      all = {:title => _("Show list of hosts with %{name}") % {:name => x.name},
+             :value => _("All (%{number})") % {:number => all_count},
+             :icon  => 'pficon pficon-container-node',
+             :link  => if all_count > 0
+                         url_for_only_path(:controller              => controller.controller_name,
+                                 :action                  => 'show',
+                                 :display                 => 'hosts',
+                                 :id                      => @record,
+                                 :host_service_group_name => x.name,
+                                 :status                  => :all)
+                       end}
+
+      sub_items = [running, failed, all]
+
+      {:value => x.name, :sub_items => sub_items}
+    end
+  end
+
+  def textual_generate_telefonica_status
     @record.service_group_names.collect do |x|
       running_count = @record.host_ids_with_running_service_group(x.name).count
       failed_count  = @record.host_ids_with_failed_service_group(x.name).count
@@ -166,7 +221,7 @@ module EmsClusterHelper::TextualSummary
   end
 
   def textual_total_miq_templates
-    return nil if @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::EmsCluster)
+    return nil if @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::EmsCluster) || @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::EmsCluster)
 
     num = @record.total_miq_templates
     h = {:label => _("All Templates"), :icon => "pficon pficon-virtual-machine", :value => num}
@@ -188,7 +243,7 @@ module EmsClusterHelper::TextualSummary
   end
 
   def textual_rps_size
-    return nil if @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::EmsCluster)
+    return nil if @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::EmsCluster) || @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::EmsCluster)
 
     textual_link(@record.resource_pools,
                  :as   => ResourcePool,

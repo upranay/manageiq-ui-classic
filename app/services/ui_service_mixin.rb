@@ -39,6 +39,7 @@ module UiServiceMixin
       :Nuage                   => {:type => "image", :icon => provider_icon(:Nuage_Network)},
       :Openshift               => {:type => "image", :icon => provider_icon(:Openshift)},
       :Openstack               => {:type => "image", :icon => provider_icon(:Openstack)},
+      :Telefonica               => {:type => "image", :icon => provider_icon(:Telefonica)},
       :Redhat                  => {:type => "image", :icon => provider_icon(:Redhat)},
       :Vmware                  => {:type => "image", :icon => provider_icon(:Vmware)},
 

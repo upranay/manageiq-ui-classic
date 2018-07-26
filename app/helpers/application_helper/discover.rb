@@ -10,6 +10,7 @@ module ApplicationHelper
       'lenovo_ph_infra' => _('Lenovo XClarity Administrator'),
       'msvirtualserver' => _('MS vCenter'),
       'openstack_infra' => _('OpenStack Infrastructure'),
+      'telefonica_infra' => _('Telefonica Infrastructure'),
       'rhevm'           => _('Red Hat Virtualization'),
       'scvmm'           => _('Microsoft System Center VMM'),
       'virtualcenter'   => _('VMware vCenter'),

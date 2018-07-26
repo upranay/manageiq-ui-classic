@@ -62,6 +62,7 @@ module HostHelper::TextualSummary
 
   def textual_group_cloud_services
     TextualGroup.new(_("Cloud Services"), textual_openstack_nova_scheduler) if @record.openstack_host?
+    TextualGroup.new(_("Cloud Services"), textual_telefonica_nova_scheduler) if @record.telefonica_host?
   end
 
   def textual_group_openstack_service_status
@@ -69,9 +70,19 @@ module HostHelper::TextualSummary
     TextualMultilink.new(_("OpenStack Service Status"), :items => textual_generate_openstack_status)
   end
 
+  def textual_group_telefonica_service_status
+    return nil unless @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::Host)
+    TextualMultilink.new(_("OpenStack Service Status"), :items => textual_generate_telefonica_status)
+  end
+
   def textual_group_openstack_hardware_status
     return nil unless @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::Host)
     TextualGroup.new(_("Openstack Hardware"), %i(introspected provision_state))
+  end
+
+  def textual_group_telefonica_hardware_status
+    return nil unless @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::Host)
+    TextualGroup.new(_("Telefonica Hardware"), %i(introspected provision_state))
   end
 
   #
@@ -80,6 +91,50 @@ module HostHelper::TextualSummary
 
   def textual_generate_openstack_status
     @record.host_service_group_openstacks.collect do |x|
+      running_count       = x.running_system_services.count
+      failed_count        = x.failed_system_services.count
+      all_count           = x.system_services.count
+      configuration_count = x.filesystems.count
+
+      running = {:title => _("Show list of running %{name}") % {:name => x.name},
+                 :value => _("Running (%{number})") % {:number => running_count},
+                 :icon  => failed_count == 0 && running_count > 0 ? 'pficon pficon-ok' : nil,
+                 :link  => running_count > 0 ? url_for_only_path(:controller => controller.controller_name,
+                                                      :action => 'host_services', :id => @record,
+                                                      :db => controller.controller_name, :host_service_group => x.id,
+                                                      :status => :running) : nil}
+
+      failed = {:title => _("Show list of failed %{name}") % {:name => x.name},
+                :value => _("Failed (%{number})") % {:number => failed_count},
+                :icon  => failed_count > 0 ? 'pficon pficon-error-circle-o' : nil,
+                :link  => failed_count > 0 ? url_for_only_path(:controller => controller.controller_name,
+                                                    :action => 'host_services', :id => @record,
+                                                    :db => controller.controller_name, :host_service_group => x.id,
+                                                    :status => :failed) : nil}
+
+      all = {:title => _("Show list of all %{name}") % {:name => x.name},
+             :value => _("All (%{number})") % {:number => all_count},
+             :icon  => 'pficon pficon-service',
+             :link  => all_count > 0 ? url_for_only_path(:controller => controller.controller_name, :action => 'host_services',
+                                              :id => @record, :db => controller.controller_name,
+                                              :host_service_group => x.id, :status => :all) : nil}
+
+      configuration = {:title => _("Show list of configuration files of %{name}") % {:name => x.name},
+                       :icon  => 'fa fa-file-o',
+                       :value => _("Configuration (%{number})") % {:number => configuration_count},
+                       :link  => configuration_count > 0 ? url_for_only_path(:controller => controller.controller_name,
+                                                                  :action => 'filesystems', :id => @record,
+                                                                  :db => controller.controller_name,
+                                                                  :host_service_group => x.id) : nil}
+
+      sub_items = [running, failed, all, configuration]
+
+      {:value => x.name, :sub_items => sub_items}
+    end
+  end
+
+  def textual_generate_telefonica_status
+    @record.host_service_group_telefonicas.collect do |x|
       running_count       = x.running_system_services.count
       failed_count        = x.failed_system_services.count
       all_count           = x.system_services.count
@@ -176,7 +231,7 @@ module HostHelper::TextualSummary
   end
 
   def textual_storage_adapters
-    return nil if @record.openstack_host?
+    return nil if @record.openstack_host? || @record.telefonica_host?
     num = @record.hardware.nil? ? 0 : @record.hardware.number_of(:storage_adapters)
     h = {:label => _("Storage Adapters"), :icon => "ff ff-network-card", :value => num}
     if num > 0
@@ -187,7 +242,7 @@ module HostHelper::TextualSummary
   end
 
   def textual_network
-    return nil if @record.openstack_host?
+    return nil if @record.openstack_host? || @record.telefonica_host?
     num = @record.number_of(:switches)
     h = {:label => _("Network"), :icon => "pficon pficon-network", :value => (num == 0 ? _("N/A") : _("Available"))}
     if num > 0
@@ -253,12 +308,12 @@ module HostHelper::TextualSummary
   end
 
   def textual_storages
-    return nil if @record.openstack_host?
+    return nil if @record.openstack_host? || @record.telefonica_host?
     textual_link(@record.storages)
   end
 
   def textual_resource_pools
-    return nil if @record.openstack_host?
+    return nil if @record.openstack_host? || @record.telefonica_host?
     textual_link(@record.resource_pools,
                  :as   => ResourcePool,
                  :link => url_for_only_path(:action => 'show', :id => @record, :display => 'resource_pools'))
@@ -277,7 +332,7 @@ module HostHelper::TextualSummary
   end
 
   def textual_availability_zone
-    return nil unless @record.openstack_host?
+    return nil unless @record.openstack_host? || @record.telefonica_host?
     availability_zone = @record.availability_zone
     h = {:label => _('Availability Zone'),
          :icon  => "pficon pficon-zone",
@@ -290,7 +345,7 @@ module HostHelper::TextualSummary
   end
 
   def textual_used_tenants
-    return nil unless @record.openstack_host?
+    return nil unless @record.openstack_host? || @record.telefonica_host?
     textual_link(@record.cloud_tenants,
                  :as   => CloudTenant,
                  :link => url_for_only_path(:action => 'show', :id => @record, :display => 'cloud_tenants'))
@@ -308,7 +363,7 @@ module HostHelper::TextualSummary
   end
 
   def textual_templates
-    return nil if @record.openstack_host?
+    return nil if @record.openstack_host? || @record.telefonica_host?
     @record.miq_templates
   end
 
@@ -439,7 +494,20 @@ module HostHelper::TextualSummary
      :link => url_for_only_path(:controller => controller.controller_name, :action => 'host_cloud_services', :id => @record)}
   end
 
+  def textual_telefonica_nova_scheduler
+    {:label => _("Telefonica Nova Scheduler"), :value => telefonica_nova_scheduler_value,
+     :link => url_for_only_path(:controller => controller.controller_name, :action => 'host_cloud_services', :id => @record)}
+  end
+
   def openstack_nova_scheduler_value
+    return _("Not available. Did you assigned Cloud Provider and run SSA?") if @record.cloud_services.empty?
+    "%{enabled_cnt} Enabled / %{disabled_cnt} Disabled " % {
+      :enabled_cnt  => @record.cloud_services.where(:scheduling_disabled => false).count,
+      :disabled_cnt => @record.cloud_services.where(:scheduling_disabled => true).count
+    }
+  end
+
+  def telefonica_nova_scheduler_value
     return _("Not available. Did you assigned Cloud Provider and run SSA?") if @record.cloud_services.empty?
     "%{enabled_cnt} Enabled / %{disabled_cnt} Disabled " % {
       :enabled_cnt  => @record.cloud_services.where(:scheduling_disabled => false).count,

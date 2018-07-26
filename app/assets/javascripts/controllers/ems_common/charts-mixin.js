@@ -35,6 +35,10 @@ angular.module('miq.util').factory('chartsMixin', ['$document', function($docume
     return (providerType === "ManageIQ::Providers::Openstack::InfraManager");
   };
 
+  var isTelefonica = function isTelefonica(providerType) {
+    return (providerType === "ManageIQ::Providers::Telefonica::InfraManager");
+  };
+
   var chartConfig = {
     cpuUsageConfig: {
       chartId: 'cpuUsageChart',
@@ -152,5 +156,6 @@ angular.module('miq.util').factory('chartsMixin', ['$document', function($docume
     processData: processData,
     dailyTimeTooltip: dailyTimeTooltip,
     isOpenstack: isOpenstack,
+    isTelefonica: isTelefonica
   };
 }]);

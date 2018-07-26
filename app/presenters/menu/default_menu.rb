@@ -101,6 +101,7 @@ module Menu
           case klass.node_types
           when :non_openstack then name1
           when :openstack     then name2
+          when :telefonica     then name2
           else                     name3
           end
         end
