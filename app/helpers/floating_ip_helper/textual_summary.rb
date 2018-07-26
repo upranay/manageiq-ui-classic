@@ -10,7 +10,7 @@ module FloatingIpHelper::TextualSummary
   end
 
   def textual_group_relationships
-    TextualGroup.new(_("Relationships"), %i(parent_ems_cloud ems_network cloud_tenant instance network_port))
+    TextualGroup.new(_("Relationships"), %i(parent_ems_cloud ems_network cloud_tenant instance network_port network_router cloud_network))
   end
 
   #
@@ -56,5 +56,13 @@ module FloatingIpHelper::TextualSummary
 
   def textual_network_port
     @record.network_port
+  end
+
+  def textual_network_router
+    textual_link(@record.network_router, :label => _('Network Router'))
+  end
+
+  def textual_cloud_network
+    textual_link(@record.cloud_network, :label => _("Cloud Network"))
   end
 end

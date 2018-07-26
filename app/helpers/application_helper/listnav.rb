@@ -52,6 +52,7 @@ module ApplicationHelper
         physical_rack
         physical_chassis
         physical_server
+        physical_storage
         physical_switch
         resource_pool
         security_group
@@ -104,7 +105,7 @@ module ApplicationHelper
         link_to("#{name}: #{ent.name}",
                 link_params,
                 :title => _("Show this %{entity_name}'s parent %{linked_entity_name}") %
-                          {:entity_name        => record.class.name.demodulize.titleize,
+                          {:entity_name        => ui_lookup(:model => record.class.name.demodulize),
                            :linked_entity_name => name})
       end
     end

@@ -2,7 +2,7 @@
 //= require bower_components/es6-shim/es6-shim
 //= require bower_components/array-includes/array-includes
 //= require bower_components/fetch/fetch
-//= require jquery
+//= require jquery/dist/jquery.js
 //= require ./jquery_overrides
 //= require ./i18n
 //= require patternfly
@@ -15,7 +15,6 @@
 //= require bower_components/angular-bootstrap/ui-bootstrap-tpls
 //= require angular-sanitize
 //= require angular.validators/angular.validators
-//= require ng-redux/dist/ng-redux
 //= require bower_components/moment/moment
 //= require bower_components/moment-strftime/lib/moment-strftime
 //= require bower_components/moment-timezone/moment-timezone
