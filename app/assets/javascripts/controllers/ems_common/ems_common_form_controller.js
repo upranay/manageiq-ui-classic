@@ -544,7 +544,6 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
   };
 
   $scope.telefonicaSecurityProtocolChanged = function() {
-    System.log("hello");
     if ($scope.emsCommonModel.emstype === 'telefonica' || $scope.emsCommonModel.emstype === 'telefonica_infra') {
       if ($scope.emsCommonModel.default_security_protocol === 'non-ssl') {
         $scope.emsCommonModel.default_api_port = $scope.getDefaultApiPort($scope.emsCommonModel.emstype);
