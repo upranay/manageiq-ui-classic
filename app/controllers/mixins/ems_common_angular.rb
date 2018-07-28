@@ -838,8 +838,7 @@ module Mixins
     def retrieve_event_stream_selection
       return 'amqp' if @ems.connection_configurations.amqp&.endpoint&.hostname&.present?
       return 'ceilometer' if @ems.connection_configurations.ceilometer&.endpoint&.hostname&.present?
-      @ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) || @ems.kind_of?(ManageIQ::Providers::Telefonica::CloudManager)
-       || @ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || @ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager) ? 'ceilometer' : 'none'
+      @ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) || @ems.kind_of?(ManageIQ::Providers::Telefonica::CloudManager) || @ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || @ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager) ? 'ceilometer' : 'none'
     end
 
     def construct_edit_for_audit(ems)
