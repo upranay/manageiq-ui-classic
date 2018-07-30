@@ -104,7 +104,7 @@ class EmsInfraDashboardService < EmsDashboardService
     {
       :clusterCpuUsage    => cluster_cpu_usage.presence,
       :clusterMemoryUsage => cluster_memory_usage.presence,
-      :title              => (openstack? || telefonica?) ? _('Deployment Roles Utilization') : _('Cluster Utilization')
+      :title              => openstack? ? _('Deployment Roles Utilization') : _('Cluster Utilization')
     }
   end
 

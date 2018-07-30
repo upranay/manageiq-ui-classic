@@ -97,6 +97,7 @@ module Menu
         ])
       end
 
+      # Click2Cloud: Added telefonica hybrid name
       def hybrid_name(klass, name1, name2, name3)
         lambda do
           case klass.node_types

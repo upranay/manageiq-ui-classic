@@ -46,6 +46,7 @@ class CatalogController < ApplicationController
     'st_catalog_new'                => :st_catalog_edit,
   }.freeze
 
+  # Click2Cloud: Added telefonica orchestration and vnfd template
   ORCHESTRATION_TEMPLATES_NODES = {
     'ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate'    => "otcfn",
     'ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate' => "othot",
@@ -1121,6 +1122,7 @@ class CatalogController < ApplicationController
     replace_right_cell
   end
 
+  # Click2Cloud: Added telefonica orchestration and vnfd template
   def ot_add_submit_save
     assert_privileges("orchestration_template_add")
     load_edit("ot_add__new", "replace_cell__explorer")
