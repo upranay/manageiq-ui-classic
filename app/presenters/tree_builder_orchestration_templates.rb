@@ -49,6 +49,7 @@ class TreeBuilderOrchestrationTemplates < TreeBuilder
     count_only_or_objects(count_only, nodes)
   end
 
+  # Click2Cloud: Added telefonica cloudmanager templates
   def x_get_tree_custom_kids(object, count_only, _options)
     classes = {
       "otcfn" => ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate,

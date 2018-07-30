@@ -3,6 +3,7 @@ describe "shared/views/ems_common/show" do
   [
     TestSetup.new(:ems_openstack, EmsCloudHelper::TextualSummary),
     TestSetup.new(:ems_vmware,    EmsInfraHelper::TextualSummary),
+    TestSetup.new(:ems_telefonica, EmsCloudHelper::TextualSummary),
   ].each do |setup|
     let(:zone) { FactoryGirl.create(:zone) }
     let(:ems) { FactoryGirl.create(setup.ems_type, :hostname => '1.1.1.1', :zone => zone) }

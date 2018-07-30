@@ -527,14 +527,17 @@ module EmsCommon
     @provider_regions = retrieve_provider_regions
     @openstack_infra_providers = retrieve_openstack_infra_providers
     @openstack_security_protocols = retrieve_openstack_security_protocols
+
+    # Click2Cloud: Added telefonica infra providers, secruity protocol and api versions
     @telefonica_infra_providers = retrieve_telefonica_infra_providers
     @telefonica_security_protocols = retrieve_telefonica_security_protocols
+    @telefonica_api_versions = retrieve_telefonica_api_versions
+
     @amqp_security_protocols = retrieve_amqp_security_protocols
     @nuage_security_protocols = retrieve_nuage_security_protocols
     @container_security_protocols = retrieve_container_security_protocols
     @scvmm_security_protocols = [[_('Basic (SSL)'), 'ssl'], ['Kerberos', 'kerberos']]
     @openstack_api_versions = retrieve_openstack_api_versions
-    @telefonica_api_versions = retrieve_telefonica_api_versions
     @vmware_cloud_api_versions = retrieve_vmware_cloud_api_versions
     @emstype_display = model.supported_types_and_descriptions_hash[@ems.emstype]
     if @ems.respond_to?(:description)
@@ -560,6 +563,7 @@ module EmsCommon
     ManageIQ::Providers::Openstack::Provider.pluck(:name, :id)
   end
 
+  # Click2Cloud: Added method to retrieve telefonica provider name and idf
   def retrieve_telefonica_infra_providers
     ManageIQ::Providers::Telefonica::Provider.pluck(:name, :id)
   end
@@ -568,6 +572,7 @@ module EmsCommon
     [['Keystone v2', 'v2'], ['Keystone v3', 'v3']]
   end
 
+  # Click2Cloud: Added method to retrieve telefonica api versions
   def retrieve_telefonica_api_versions
     [['Keystone v2', 'v2'], ['Keystone v3', 'v3']]
   end

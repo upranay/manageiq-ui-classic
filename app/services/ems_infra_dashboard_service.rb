@@ -56,8 +56,8 @@ class EmsInfraDashboardService < EmsDashboardService
     }
 
     attr_hsh = {
-      :ems_clusters  => openstack? || telefonica? ? _('Deployment Roles') : _('Clusters'),
-      :hosts         => openstack? || telefonica? ? _('Nodes') : _('Hosts'),
+      :ems_clusters  => openstack? ? _('Deployment Roles') : _('Clusters'),
+      :hosts         => openstack? ? _('Nodes') : _('Hosts'),
       :storages      => _('Datastores'),
       :vms           => _('VMs'),
       :miq_templates => _('Templates'),
@@ -104,7 +104,7 @@ class EmsInfraDashboardService < EmsDashboardService
     {
       :clusterCpuUsage    => cluster_cpu_usage.presence,
       :clusterMemoryUsage => cluster_memory_usage.presence,
-      :title              => (openstack? || telefonica?) ? _('Deployment Roles Utilization') : _('Cluster Utilization')
+      :title              => openstack? ? _('Deployment Roles Utilization') : _('Cluster Utilization')
     }
   end
 
@@ -136,9 +136,5 @@ class EmsInfraDashboardService < EmsDashboardService
 
   def openstack?
     @ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager)
-  end
-
-  def telefonica?
-    @ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager)
   end
 end

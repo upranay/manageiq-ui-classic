@@ -517,6 +517,7 @@ class TreeBuilder
     :vmdb                            => "TreeBuilderOpsVmdb",
   }.freeze
 
+  # Click2Cloud: Added telefonica cloudmanager templates prefix
   # Tree node prefixes for generic explorers
   X_TREE_NODE_PREFIXES = {
     "a"    => "MiqAction",
