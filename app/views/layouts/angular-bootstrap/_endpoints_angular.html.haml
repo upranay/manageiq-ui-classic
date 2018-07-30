@@ -37,7 +37,7 @@
                        "prefix"                      => prefix.to_s,
                        "reset-validation-status"     => "#{prefix}_auth_status")
     .col-md-8{"ng-if" => "emsCommonModel.emstype == 'telefonica' || emsCommonModel.emstype == 'telefonica_infra'"}
-      - prefix == "amqp" ? security_protocols = @amqp_security_protocols : security_protocols = @telefonica_security_protocols
+      - prefix == "amqp" ? security_protocols = @amqp_security_protocols : security_protocols = @telefonica_security_protocol
       = select_tag("#{prefix}_security_protocol",
                        options_for_select([["<#{_('Choose')}>", nil]] + security_protocols, :disabled => ["<#{_('Choose')}>", nil]),
                        "ng-model"                    => "#{ng_model}.#{prefix}_security_protocol",
@@ -177,8 +177,8 @@
   .form-group{"ng-class" => "{'has-error': angularForm.#{prefix}_api_port.$invalid}",
               "ng-if" => "emsCommonModel.emstype == 'openstack'              || " + |
                          "emsCommonModel.emstype == 'openstack_infra'        || " + |
-						 "emsCommonModel.emstype == 'telefonica'              || " + |
-                         "emsCommonModel.emstype == 'telefonica_infra'        || " + |
+						             "emsCommonModel.emstype == 'telefonica'             || " + |
+                         "emsCommonModel.emstype == 'telefonica_infra'       || " + |
                          "emsCommonModel.emstype == 'nuage_network'          || " + |
                          "emsCommonModel.emstype == 'rhevm'                  || " + |
                          "emsCommonModel.emstype === 'kubevirt'              || " + |
