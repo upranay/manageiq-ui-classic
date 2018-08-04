@@ -218,7 +218,7 @@ class ApplicationHelper::ToolbarChooser
         return "services_center_tb"
       end
     elsif x_active_tree == :ot_tree
-      if %w(root xx-otcfn xx-othot xx-otazu xx-otvnf xx-otvap).include?(x_node)
+      if %w(root xx-otcfn xx-othot xx-otthot xx-otazu xx-otvnf xx-ottvnf xx-otvap).include?(x_node)
         return "orchestration_templates_center_tb"
       else
         return "orchestration_template_center_tb"

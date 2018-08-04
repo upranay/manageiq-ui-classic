@@ -50,7 +50,7 @@ class CatalogController < ApplicationController
   ORCHESTRATION_TEMPLATES_NODES = {
     'ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate'    => "otcfn",
     'ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate' => "othot",
-    'ManageIQ::Providers::Telefonica::CloudManager::OrchestrationTemplate' => "ottthot",
+    'ManageIQ::Providers::Telefonica::CloudManager::OrchestrationTemplate' => "otthot",
     'ManageIQ::Providers::Azure::CloudManager::OrchestrationTemplate'     => "otazu",
     'ManageIQ::Providers::Openstack::CloudManager::VnfdTemplate'          => "otvnf",
     'ManageIQ::Providers::Telefonica::CloudManager::VnfdTemplate'          => "ottvnf",
@@ -1853,7 +1853,7 @@ class CatalogController < ApplicationController
         get_node_info_handle_simple_leaf_node(id)
       elsif x_node == "root"
         get_node_info_handle_root_node
-      elsif %w(xx-otcfn xx-othot xx-otazu xx-otvnf xx-otvap).include?(x_node)
+      elsif %w(xx-otcfn xx-othot xx-otthot xx-otazu xx-otvnf xx-ottvnf xx-otvap).include?(x_node)
         get_node_info_handle_ot_folder_nodes
       elsif x_active_tree == :stcat_tree
         get_node_info_handle_leaf_node_stcat(id)
