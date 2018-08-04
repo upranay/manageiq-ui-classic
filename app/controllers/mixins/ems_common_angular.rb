@@ -16,6 +16,7 @@ module Mixins
     end
 
     def update
+      byebug
       assert_privileges("#{permission_prefix}_edit")
       case params[:button]
       when "cancel"   then update_ems_button_cancel
@@ -72,6 +73,7 @@ module Mixins
     end
 
     def update_ems_button_validate
+      byebug
       result, details = realtime_authentication_check
       render_validation_result(result, details)
     end
