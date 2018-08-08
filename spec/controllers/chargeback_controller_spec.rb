@@ -11,14 +11,11 @@ describe ChargebackController do
 
       it "returns the classification entry record" do
         controller.instance_variable_set(:@edit, :cb_assign => {:tags => {}})
-        controller.send(:get_tags_all, tag.id)
-        expect(assigns(:edit)[:cb_assign][:tags][tag.id]).to eq(entry.id.to_s => entry.description)
-      end
+        controller.send(:get_tags_all)
 
-      it "returns empty hash when classification entry is not found" do
-        controller.instance_variable_set(:@edit, :cb_assign => {:tags => {}})
-        controller.send(:get_tags_all, 1)
-        expect(assigns(:edit)[:cb_assign][:tags][1]).to eq({})
+        result = {category.id => {tag.id.to_s => tag.description}, tag.id => { entry.id.to_s => entry.description}, entry.id => {}}
+
+        expect(assigns(:edit)[:cb_assign][:tags]).to eq(result)
       end
     end
 
@@ -50,6 +47,19 @@ describe ChargebackController do
 
       it "returns tag for current assignments" do
         expect { controller.send(:cb_assign_get_form_vars) }.not_to raise_error
+      end
+
+      it "initializes hash when data are no available(params[:cblabel_key] == null)" do
+        controller.send(:cb_assign_get_form_vars)
+        docker_label_values = controller.instance_variable_get(:@edit)[:cb_assign][:docker_label_values]
+        expect(docker_label_values).to eq({})
+      end
+
+      it "initializes hash when data are no available (params[:cblabel_key] == nil)" do
+        controller.instance_variable_set(:@_params, :cblabel_key => nil)
+        controller.send(:cb_assign_get_form_vars)
+        docker_label_values = controller.instance_variable_get(:@edit)[:cb_assign][:docker_label_values]
+        expect(docker_label_values).to eq({})
       end
     end
   end
