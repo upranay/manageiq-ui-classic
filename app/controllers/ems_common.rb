@@ -293,7 +293,7 @@ module EmsCommon
                   @flash_array.nil?
 
         unless ["host_edit", "#{pfx}_edit", "#{pfx}_miq_request_new", "#{pfx}_clone",
-                "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed])
+                "#{pfx}_migrate", "#{pfx}_publish", 'vm_rename'].include?(params[:pressed])
           @refresh_div = "main_div"
           @refresh_partial = "layouts/gtl"
           show                                                        # Handle EMS buttons
@@ -447,8 +447,9 @@ module EmsCommon
                           :id         => find_record_with_rbac(NetworkRouter, checked_or_params)
     elsif params[:pressed] == 'ems_infra_change_password'
       javascript_redirect(change_password_ems_physical_infra_path(checked_or_params.first))
-    elsif params[:pressed].ends_with?("_edit") || ["#{pfx}_miq_request_new", "#{pfx}_clone",
-                                                   "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed])
+    elsif params[:pressed].ends_with?("_edit") ||
+          ["#{pfx}_miq_request_new", "#{pfx}_clone", "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed]) ||
+          params[:pressed] == 'vm_rename' && @flash_array.nil?
       render_or_redirect_partial(pfx)
     else
       if @refresh_div == "main_div" && @lastaction == "show_list"
@@ -527,9 +528,7 @@ module EmsCommon
     @provider_regions = retrieve_provider_regions
     @openstack_infra_providers = retrieve_openstack_infra_providers
     @openstack_security_protocols = retrieve_openstack_security_protocols
-
     # Click2Cloud: Added telefonica infra providers, secruity protocol and api versions
-    @telefonica_infra_providers = retrieve_telefonica_infra_providers
     @telefonica_security_protocols = retrieve_telefonica_security_protocols
     @telefonica_api_versions = retrieve_telefonica_api_versions
 
@@ -563,11 +562,6 @@ module EmsCommon
     ManageIQ::Providers::Openstack::Provider.pluck(:name, :id)
   end
 
-  # Click2Cloud: Added method to retrieve telefonica provider name and idf
-  def retrieve_telefonica_infra_providers
-    ManageIQ::Providers::Telefonica::Provider.pluck(:name, :id)
-  end
-
   def retrieve_openstack_api_versions
     [['Keystone v2', 'v2'], ['Keystone v3', 'v3']]
   end
@@ -593,6 +587,7 @@ module EmsCommon
     retrieve_security_protocols
   end
 
+  # Click2Cloud: Added method to retrieve telefonica security protocol
   def retrieve_telefonica_security_protocols
     retrieve_security_protocols
   end

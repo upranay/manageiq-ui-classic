@@ -46,7 +46,7 @@ class CatalogController < ApplicationController
     'st_catalog_new'                => :st_catalog_edit,
   }.freeze
 
-  # Click2Cloud: Added telefonica orchestration and vnfd template
+# Click2Cloud: Added telefonica orchestration and vnfd template
   ORCHESTRATION_TEMPLATES_NODES = {
     'ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate'    => "otcfn",
     'ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate' => "othot",
@@ -1122,7 +1122,6 @@ class CatalogController < ApplicationController
     replace_right_cell
   end
 
-  # Click2Cloud: Added telefonica orchestration and vnfd template
   def ot_add_submit_save
     assert_privileges("orchestration_template_add")
     load_edit("ot_add__new", "replace_cell__explorer")
@@ -1790,7 +1789,7 @@ class CatalogController < ApplicationController
   end
 
   def get_node_info_handle_unassigned_node
-    scope = [[:without_service_template_catalog_id]]
+    scope = [:public_service_templates, [:without_service_template_catalog_id]]
     service_template_list(scope, :no_order_button => true)
     @right_cell_text = _("Services in Catalog \"Unassigned\"")
   end
@@ -1880,7 +1879,7 @@ class CatalogController < ApplicationController
         get_node_info_handle_simple_leaf_node(id)
       elsif x_node == "root"
         get_node_info_handle_root_node
-      elsif %w(xx-otcfn xx-othot xx-otthot xx-otazu xx-otvnf xx-ottvnf xx-otvap).include?(x_node)
+      elsif %w(xx-otcfn xx-othot xx-otazu xx-otvnf xx-otvap).include?(x_node)
         get_node_info_handle_ot_folder_nodes
       elsif x_active_tree == :stcat_tree
         get_node_info_handle_leaf_node_stcat(id)

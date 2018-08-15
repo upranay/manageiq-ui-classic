@@ -16,7 +16,6 @@ module Mixins
     end
 
     def update
-      byebug
       assert_privileges("#{permission_prefix}_edit")
       case params[:button]
       when "cancel"   then update_ems_button_cancel
@@ -73,7 +72,6 @@ module Mixins
     end
 
     def update_ems_button_validate
-      byebug
       result, details = realtime_authentication_check
       render_validation_result(result, details)
     end
@@ -118,6 +116,7 @@ module Mixins
 
     def create
       assert_privileges("#{permission_prefix}_new")
+
       case params[:button]
       when "add" then create_ems_button_add
       when "validate" then create_ems_button_validate
@@ -125,7 +124,6 @@ module Mixins
       end
     end
 
-    # Click2Cloud: Added telefonica cloudmanager changes
     def get_task_args(ems)
       user, password = params[:default_userid], MiqPassword.encrypt(params[:default_password])
       case ems.to_s
@@ -208,7 +206,7 @@ module Mixins
       else
         @in_a_form = true
         ems.errors.each do |field, msg|
-          add_flash("#{ems.class.human_attribute_name(field)} #{msg}", :error)
+          add_flash("#{ems.class.human_attribute_name(field, :ui => true)} #{msg}", :error)
         end
 
         drop_breadcrumb(:name => _("Add New %{tables}") % {:tables => ui_lookup(:tables => table_name)},
@@ -363,7 +361,7 @@ module Mixins
       end
 
       if @ems.kind_of?(ManageIQ::Providers::Nuage::NetworkManager)
-        amqp_fallback_hostname1 = @ems.x.amqp_fallback1 ? @ems.connection_configurations.amqp_fallback1.endpoint.hostname : ""
+        amqp_fallback_hostname1 = @ems.connection_configurations.amqp_fallback1 ? @ems.connection_configurations.amqp_fallback1.endpoint.hostname : ""
         amqp_fallback_hostname2 = @ems.connection_configurations.amqp_fallback2 ? @ems.connection_configurations.amqp_fallback2.endpoint.hostname : ""
       end
 
@@ -581,8 +579,6 @@ module Mixins
           amqp_endpoint = {:role => :amqp, :hostname => amqp_hostname, :port => amqp_port, :security_protocol => amqp_security_protocol}
         else
           ceilometer_endpoint = {:role => :ceilometer}
-        end
-      end
 
       if ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)
         ssh_keypair_endpoint = {:role => :ssh_keypair}

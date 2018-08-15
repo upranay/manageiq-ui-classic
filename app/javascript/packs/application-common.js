@@ -20,6 +20,7 @@ import { rxSubject, sendDataWithRx, listenToRx } from '../miq_observable';
 
 import { store, addReducer } from '../miq-redux';
 import { history } from '../miq-component/react-history.ts';
+import createReduxRoutingActions from '../miq-redux/redux-router-actions';
 
 ManageIQ.react = {
   mount,
@@ -35,7 +36,8 @@ ManageIQ.component = {
 ManageIQ.redux = {
   store,
   addReducer,
-  history
+  history,
+  ...createReduxRoutingActions(store),
 };
 
 ManageIQ.angular.rxSubject = rxSubject;
@@ -53,3 +55,8 @@ window.http = http;
 // for Automate > Simulate
 require('xml_display/XMLDisplay.js');
 require('xml_display/XMLDisplay.css');
+
+// miqSpinner, miqSearchSpinner
+import {Spinner} from 'spin.js';
+import 'spin.js/spin.css';
+window.Spinner = Spinner;
