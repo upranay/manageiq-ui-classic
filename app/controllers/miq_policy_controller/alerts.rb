@@ -224,11 +224,9 @@ module MiqPolicyController::Alerts
     @edit[:new][:send_evm_event] = (params[:send_evm_event_cb] == "1") if params.key?(:send_evm_event_cb)
     @edit[:new][:send_event]     = (params[:send_event_cb] == "1") if params.key?(:send_event_cb)
 
-    @alert_refresh = true if params[:miq_alert_db] || params.key?(:exp_name) || params[:exp_event] ||
-                             params.key?(:send_snmp_cb) || params.key?(:send_email_cb) ||
-                             params.key?(:send_event_cb) || params.key?(:select_ems_id) ||
-                             params.key?(:perf_column) || params.key?(:trend_direction)
-    @to_email_refresh = true if params[:user_email] || params[:remove_email] || params[:button] == "add_email"
+    @alert_refresh = %i(exp_event exp_name miq_alert_db perf_column select_ems_id
+                        send_email_cb send_event_cb send_snmp_cb trend_direction).any? { |key| params.key?(key) }
+    @to_email_refresh = params[:user_email] || params[:remove_email] || params[:button] == "add_email"
     send_button_changes
   end
 
@@ -477,10 +475,10 @@ module MiqPolicyController::Alerts
       @sb[:alert][:events] ||= {}
       EmsEvent.event_groups.each do |_k, v|
         name = v[:name]
-        v[:detail].each do |d|
+        v[:detail]&.each do |d|
           @sb[:alert][:events][d] = name + ": " + d if vm_events.include?(d)
         end
-        v[:critical].each do |c|
+        v[:critical]&.each do |c|
           @sb[:alert][:events][c] = name + ": " + c if vm_events.include?(c)
         end
       end

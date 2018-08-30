@@ -248,6 +248,11 @@ module ApplicationController::Buttons
     end
   end
 
+  def open_url_after_dialog
+    url = SystemConsole.find_by(:vm_id => params[:targetId]).url
+    render :json => {:open_url => url}
+  end
+
   private
 
   BASE_MODEL_EXPLORER_CLASSES = [MiqGroup, MiqTemplate, Service, Switch, Tenant, User, Vm].freeze
@@ -287,9 +292,9 @@ module ApplicationController::Buttons
   def custom_buttons_invoke(button, objs)
     if objs.length > 1 &&
        (button.options && button.options.key?(:submit_how) && button.options[:submit_how].to_s == 'all')
-      button.invoke(objs)
+      button.invoke(objs, 'UI')
     else
-      objs.each { |obj| button.invoke(obj) }
+      objs.each { |obj| button.invoke(obj, 'UI') }
     end
   end
 
@@ -338,12 +343,13 @@ module ApplicationController::Buttons
       }
 
       options[:dialog_locals] = DialogLocalService.new.determine_dialog_locals_for_custom_button(obj, button.name, button.resource_action, display_options)
+      options[:dialog_locals][:open_url] = button.options.present? && button.options.fetch_path(:open_url)
       options.merge!(display_options) unless display_options.empty?
       dialog_initialize(button.resource_action, options)
 
-    elsif button.options && button.options.key?(:open_url) && button.options[:open_url]
+    elsif button.options.present? && button.options.fetch_path(:open_url)
       # not supported for objs: cannot do wait for task for multiple tasks
-      task_id = button.invoke_async(obj)
+      task_id = button.invoke_async(obj, 'UI')
       initiate_wait_for_task(:task_id => task_id, :action => :custom_button_done)
 
     else

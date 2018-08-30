@@ -31,14 +31,14 @@ describe('Toolbar actions', () => {
         { success: true, message: 'Some message' },
         { success: true, message: 'Some message' },
       ]);
-      expect(messageCount).toEqual({ 'false': 2, 'true': 2 });
+      expect(messageCount).toEqual({ false: 2, true: 2 });
     });
 
     it('should have empty items for wrong messages', () => {
       const messageCount = deleteActions.generateMessages([
         { message: 'No success' },
       ]);
-      expect(messageCount).toEqual({ 'false': 0, 'true': 0 });
+      expect(messageCount).toEqual({ false: 0, true: 0 });
     });
   });
 
@@ -51,18 +51,11 @@ describe('Toolbar actions', () => {
       window.sprintf = jasmine.createSpy('sprintf').and.callFake(window.sprintf);
     });
 
-    it('calls show message with string message', () => {
-      deleteActions.showMessage('some message', false);
-      expect(addFlash).toHaveBeenCalledWith('some message', 'error');
-      deleteActions.showMessage('some message 2', true);
-      expect(addFlash).toHaveBeenCalledWith('some message 2', 'success');
-    });
-
     it('calls show message with object', () => {
-      deleteActions.showMessage({ false: 1, true: 4 });
+      deleteActions.showMessage({ false: 1, true: 4 }, { single: 'Some', multiple: 'Somes' });
       expect(window.sprintf).toHaveBeenCalled();
-      expect(addFlash).toHaveBeenCalledWith('Deleting of 4 items queued.', 'success');
-      expect(addFlash).toHaveBeenCalledWith('Failed to delete 1 items.', 'error');
+      expect(addFlash).toHaveBeenCalledWith('Delete initiated for 4 Somes.', 'success');
+      expect(addFlash).toHaveBeenCalledWith('Failed to delete 1 Some.', 'error');
     });
   });
 });

@@ -46,7 +46,7 @@ class CatalogController < ApplicationController
     'st_catalog_new'                => :st_catalog_edit,
   }.freeze
 
-  # Click2Cloud: Added telefonica orchestration and vnfd template
+# Click2Cloud: Added telefonica orchestration and vnfd template
   ORCHESTRATION_TEMPLATES_NODES = {
     'ManageIQ::Providers::Amazon::CloudManager::OrchestrationTemplate'    => "otcfn",
     'ManageIQ::Providers::Openstack::CloudManager::OrchestrationTemplate' => "othot",
@@ -829,9 +829,25 @@ class CatalogController < ApplicationController
     prov_type = params[:st_prov_type] ? params[:st_prov_type] : @record.prov_type
     ansible_playbook = prov_type == "generic_ansible_playbook"
     @current_region = MiqRegion.my_region.region if ansible_playbook
+    @available_catalogs = available_catalogs.sort # Get available catalogs with tenants and ancestors
     ansible_playbook
   end
   helper_method :ansible_playbook?
+
+  # Get all the available Catalogs
+  def available_catalogs
+    Rbac.filtered(ServiceTemplateCatalog.all).collect do |sc|
+      if sc.tenant.present?
+        tenant_names = []
+        sc.tenant.ancestor_ids.map do |t|
+          tenant_names.push(Tenant.find_by(:id => t).name)
+        end
+        tenant_names.push(sc.tenant.name)
+        tenant_names = tenant_names.join("/")
+      end
+      [tenant_names.present? ? "#{tenant_names}/" + sc.name : sc.name, sc.id]
+    end
+  end
 
   def remove_resources_display(remove_resources)
     case remove_resources
@@ -1122,7 +1138,6 @@ class CatalogController < ApplicationController
     replace_right_cell
   end
 
-  # Click2Cloud: Added telefonica orchestration and vnfd template
   def ot_add_submit_save
     assert_privileges("orchestration_template_add")
     load_edit("ot_add__new", "replace_cell__explorer")
@@ -1656,7 +1671,7 @@ class CatalogController < ApplicationController
           @group_changed = false
           @edit[:new][:rsc_groups].each_with_index do |groups, i|
             groups.each do |g|
-              if g[:id] == rid
+              if g[:id].to_i == rid.to_i
                 @edit[:new][:rsc_groups][val.to_i - 1].push(g)
                 @edit[:new][:rsc_groups][i].delete(g)
                 @group_changed = true
@@ -1790,7 +1805,7 @@ class CatalogController < ApplicationController
   end
 
   def get_node_info_handle_unassigned_node
-    scope = [[:without_service_template_catalog_id]]
+    scope = [:public_service_templates, [:without_service_template_catalog_id]]
     service_template_list(scope, :no_order_button => true)
     @right_cell_text = _("Services in Catalog \"Unassigned\"")
   end
@@ -1880,7 +1895,7 @@ class CatalogController < ApplicationController
         get_node_info_handle_simple_leaf_node(id)
       elsif x_node == "root"
         get_node_info_handle_root_node
-      elsif %w(xx-otcfn xx-othot xx-otthot xx-otazu xx-otvnf xx-ottvnf xx-otvap).include?(x_node)
+      elsif %w(xx-otcfn xx-othot xx-otazu xx-otvnf xx-otvap).include?(x_node)
         get_node_info_handle_ot_folder_nodes
       elsif x_active_tree == :stcat_tree
         get_node_info_handle_leaf_node_stcat(id)

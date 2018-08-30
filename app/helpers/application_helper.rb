@@ -816,6 +816,7 @@ module ApplicationHelper
        cloud_volume
        cloud_volume_backup
        cloud_volume_snapshot
+       cloud_volume_type
        configuration_job
        configuration_scripts
        container
@@ -1100,6 +1101,7 @@ module ApplicationHelper
                         cloud_volume
                         cloud_volume_backup
                         cloud_volume_snapshot
+                        cloud_volume_type
                         condition
                         configuration_job
                         configuration_script_source
@@ -1361,6 +1363,14 @@ module ApplicationHelper
     when :version then Vmdb::Appliance.VERSION
     when :build then Vmdb::Appliance.BUILD
     end
+  end
+
+  def plugin_name(engine)
+    engine.respond_to?(:plugin_name) ? engine.plugin_name : engine.to_s.gsub(/ManageIQ::|::Engine/, '')
+  end
+
+  def vmdb_plugins_sha
+    Vmdb::Plugins.versions
   end
 
   def user_role_name

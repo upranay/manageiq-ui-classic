@@ -13,16 +13,16 @@ class AlertController < ApplicationController
     # Removed inactive "E-mail" tab - Sprint 34
     @lastaction = "show_list"
     @listtype = "rss_list"
-    get_rss_feeds
-    @rss_roles = ["<All>"]
-    RssFeed.roles.sort.each { |r| @rss_roles.push(r.titleize) }
+    @rss_roles = {_('All') => 'all'}
+    RssFeed.roles.sort.each { |r| @rss_roles[r.titleize] = r }
+    fetch_rss_feeds
     @breadcrumbs = []
     if params[:role].nil?
-      @rss_role = "<All>"
+      @rss_role = 'all'
       drop_breadcrumb(:name => _("All RSS Feeds"), :url => "/alert/show_list")
     else
       @rss_role = params[:role]
-      drop_breadcrumb(:name => _("%{name} RSS Feeds") % {:name => @rss_role}, :url => "/alert/show_list")
+      drop_breadcrumb(:name => _("%{name} RSS Feeds") % {:name => @rss_roles.invert[@rss_role]}, :url => "/alert/show_list")
     end
   end
 
@@ -30,14 +30,13 @@ class AlertController < ApplicationController
     show_list
     render :update do |page|
       page << javascript_prologue
-      page.replace 'tab_div', :partial => 'rss_list'
+      page.replace('tab_div', :partial => 'rss_list')
     end
   end
 
-  # Render an RSS feed back to either a local or non-local reader
-  def rss(feed = nil, local = false)
+  def rss
     feed = params[:feed] if params[:feed]
-    feed_record = RssFeed.find_by_name(feed)
+    feed_record = RssFeed.find_by(:name => feed)
     if feed_record.nil?
       raise _("Requested feed is invalid")
     end
@@ -45,21 +44,18 @@ class AlertController < ApplicationController
     proto = nil unless [nil, "http", "https"].include?(proto)    # Make sure it's http or https
     proto ||= session[:req_protocol]                             # If nil, use previously discovered value
     session[:req_protocol] ||= proto                             # Save protocol in session
-    feed_data = feed_record.generate(request.host_with_port, local, proto)
-
-    return feed_data if local
-    render feed_data unless local
+    render :text => feed_record.generate(request.host_with_port, proto), :content_type => Mime[:rss]
   end
 
   private ###########################
 
   # fetch rss feed records
-  def get_rss_feeds
-    if params[:role].nil? || params[:role] == "<All>"
-      @rss_feeds = RssFeed.order("title")
-    else
-      @rss_feeds = RssFeed.find_tagged_with(:any => [params[:role].split.join("_").downcase], :ns => "/managed", :cat => "roles").order("title")
-    end
+  def fetch_rss_feeds
+    @rss_feeds = if params[:role].nil? || params[:role] == 'all'
+                   RssFeed.order("title")
+                 elsif @rss_roles.values.include?(params[:role])
+                   RssFeed.find_tagged_with(:any => [params[:role]], :ns => "/managed", :cat => "roles").order("title")
+                 end
   end
 
   def get_session_data

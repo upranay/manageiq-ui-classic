@@ -96,7 +96,7 @@ class StorageController < ApplicationController
                    "#{pfx}_ownership", "#{pfx}_right_size", "#{pfx}_reconfigure"].include?(params[:pressed]) &&
                   @flash_array.nil? # Tag screen is showing, so return
 
-        unless ["host_edit", "#{pfx}_edit", "#{pfx}_miq_request_new", "#{pfx}_clone", "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed])
+        unless ["host_edit", "#{pfx}_edit", "#{pfx}_miq_request_new", "#{pfx}_clone", "#{pfx}_migrate", "#{pfx}_publish", 'vm_rename'].include?(params[:pressed])
           @refresh_div = "main_div"
           @refresh_partial = "layouts/gtl"
           show
@@ -118,8 +118,9 @@ class StorageController < ApplicationController
 
     if single_delete_test
       single_delete_redirect
-    elsif params[:pressed].ends_with?("_edit") || ["#{pfx}_miq_request_new", "#{pfx}_clone",
-                                                   "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed])
+    elsif params[:pressed].ends_with?("_edit") ||
+          ["#{pfx}_miq_request_new", "#{pfx}_clone", "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed]) ||
+          params[:pressed] == 'vm_rename' && @flash_array.nil?
       render_or_redirect_partial(pfx)
     elsif !flash_errors? && @refresh_div == "main_div" && @lastaction == "show_list"
       replace_gtl_main_div
@@ -221,7 +222,6 @@ class StorageController < ApplicationController
     self.x_node        = params[:id]
 
     load_or_clear_adv_search
-    apply_node_search_text if x_active_tree == :storage_tree
     replace_right_cell(:nodetype => x_node)
   end
 
@@ -328,12 +328,12 @@ class StorageController < ApplicationController
 
   def get_node_info(node, _show_list = true)
     node = valid_active_node(node)
+    session_reset # Reset session to same values as first time in
     case x_active_tree
     when :storage_tree     then storage_get_node_info(node)
     when :storage_pod_tree then storage_pod_get_node_info(node)
     end
-    @right_cell_text += _(" (Names with \"%{search_text}\")") % {:search_text => @search_text} if @search_text.present?
-    @right_cell_text += @edit[:adv_search_applied][:text] if x_tree && x_tree[:type] == :storage && @edit && @edit[:adv_search_applied]
+    set_right_cell_text
 
     if @edit && @edit.fetch_path(:adv_search_applied, :qs_exp) # If qs is active, save it in history
       x_history_add_item(:id     => x_node,
@@ -398,23 +398,6 @@ class StorageController < ApplicationController
   def search_text_type(node)
     return "storage" if storage_record?(node)
     node
-  end
-
-  def apply_node_search_text
-    setup_search_text_for_node
-    previous_nodetype = search_text_type(@sb[:storage_search_text][:previous_node])
-    current_nodetype = search_text_type(@sb[:storage_search_text][:current_node])
-
-    @sb[:storage_search_text]["#{previous_nodetype}_search_text"] = @search_text
-    @search_text = @sb[:storage_search_text]["#{current_nodetype}_search_text"] || @sb[:search_text]
-    @sb[:storage_search_text]["#{x_active_accord}_search_text"] = @search_text
-  end
-
-  def setup_search_text_for_node
-    @sb[:storage_search_text] ||= {}
-    @sb[:storage_search_text][:current_node] ||= x_node
-    @sb[:storage_search_text][:previous_node] = @sb[:storage_search_text][:current_node]
-    @sb[:storage_search_text][:current_node] = x_node
   end
 
   def update_partials(record_showing, presenter)
@@ -509,6 +492,18 @@ class StorageController < ApplicationController
   end
 
   private
+
+  def session_reset
+    if @record
+      session[:edit] = @edit = nil
+      session[:adv_search]['Storage'] = nil if session[:adv_search]
+    end
+  end
+
+  def set_right_cell_text
+    @right_cell_text += _(" (Names with \"%{search_text}\")") % {:search_text => @search_text} if @search_text.present? && @nodetype != 'ds'
+    @right_cell_text += @edit[:adv_search_applied][:text] if x_tree && x_tree[:type] == :storage && @edit && @edit[:adv_search_applied]
+  end
 
   def textual_group_list
     [

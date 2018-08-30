@@ -1,8 +1,4 @@
 //= require ./miq_global
-//= require bower_components/es6-shim/es6-shim
-//= require bower_components/array-includes/array-includes
-//= require bower_components/fetch/fetch
-//= require jquery/dist/jquery.js
 //= require ./jquery_overrides
 //= require ./i18n
 //= require patternfly
@@ -32,7 +28,7 @@
 //= require bower_components/d3/d3
 //= require bower_components/c3/c3
 //= require bower_components/lodash/lodash
-//= require bower_components/kubernetes-topology-graph/dist/topology-graph
+//= require kubernetes-topology-graph/dist/topology-graph
 //= require ./miq_browser_detect
 //= require ./miq_application
 //= require ./miq_flash
@@ -65,8 +61,6 @@
 //= require bower_components/codemirror/mode/shell/shell
 //= require bower_components/codemirror/mode/xml/xml
 //= require bower_components/codemirror/mode/yaml/yaml
-//= require bower_components/spin.js/spin
-//= require bower_components/spin.js/jquery.spin
 //= require jquery-hotkeys
 //= require ./miq_formatters
 //= require ./miq_grid

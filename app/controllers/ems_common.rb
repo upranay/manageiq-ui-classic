@@ -90,6 +90,7 @@ module EmsCommon
         cloud_volumes
         cloud_volume_snapshots
         cloud_volume_backups
+        cloud_volume_types
         configuration_jobs
         container_builds
         container_groups
@@ -235,6 +236,9 @@ module EmsCommon
       when "ems_cluster_protect"              then assign_policies(EmsCluster)
       when "ems_cluster_scan"                 then scanclusters
       when "ems_cluster_tag"                  then tag(EmsCluster)
+      # Flavor
+      when 'flavor_create'                    then javascript_redirect(:action => 'new')
+      when 'flavor_delete'                    then delete_flavors
       # Hosts
       when "host_analyze_check_compliance"    then analyze_check_compliance_hosts
       when "host_check_compliance"            then check_compliance_hosts
@@ -293,7 +297,7 @@ module EmsCommon
                   @flash_array.nil?
 
         unless ["host_edit", "#{pfx}_edit", "#{pfx}_miq_request_new", "#{pfx}_clone",
-                "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed])
+                "#{pfx}_migrate", "#{pfx}_publish", 'vm_rename', 'flavor_create', 'flavor_delete'].include?(params[:pressed])
           @refresh_div = "main_div"
           @refresh_partial = "layouts/gtl"
           show                                                        # Handle EMS buttons
@@ -447,8 +451,9 @@ module EmsCommon
                           :id         => find_record_with_rbac(NetworkRouter, checked_or_params)
     elsif params[:pressed] == 'ems_infra_change_password'
       javascript_redirect(change_password_ems_physical_infra_path(checked_or_params.first))
-    elsif params[:pressed].ends_with?("_edit") || ["#{pfx}_miq_request_new", "#{pfx}_clone",
-                                                   "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed])
+    elsif params[:pressed].ends_with?("_edit") ||
+          ["#{pfx}_miq_request_new", "#{pfx}_clone", "#{pfx}_migrate", "#{pfx}_publish"].include?(params[:pressed]) ||
+          params[:pressed] == 'vm_rename' && @flash_array.nil?
       render_or_redirect_partial(pfx)
     else
       if @refresh_div == "main_div" && @lastaction == "show_list"
@@ -466,10 +471,7 @@ module EmsCommon
 
   def check_compliance(model)
     showlist = @lastaction == "show_list"
-    ids = showlist ? find_checked_ids_with_rbac(model) : find_id_with_rbac(model, [params[:id]])
-    if ids.blank?
-      add_flash(_("No %{model} were selected for Compliance Check") % {:model => ui_lookup(:models => model.to_s)}, :error)
-    end
+    ids = find_records_with_rbac(model, checked_or_params).ids
     process_emss(ids, "check_compliance")
     params[:display] = "main"
     return if @display == 'dashboard'
@@ -481,15 +483,8 @@ module EmsCommon
   # Check compliance of Last Known Configuration for items displayed in nested lists
   def check_compliance_nested(model)
     assert_privileges("#{model.name.underscore}_check_compliance")
-    ids = find_checked_ids_with_rbac(model)
-
-    if ids.empty?
-      add_flash(_("No %{model} were selected for %{task}") % {:model => ui_lookup(:models => model.to_s),
-                                                              :task  => "Compliance Check"}, :error)
-    else
-      process_check_compliance(model, ids)
-    end
-
+    ids = find_records_with_rbac(model, checked_or_params).ids
+    process_check_compliance(model, ids)
     show_list
     ids.count
   end
@@ -527,9 +522,7 @@ module EmsCommon
     @provider_regions = retrieve_provider_regions
     @openstack_infra_providers = retrieve_openstack_infra_providers
     @openstack_security_protocols = retrieve_openstack_security_protocols
-
     # Click2Cloud: Added telefonica infra providers, secruity protocol and api versions
-    @telefonica_infra_providers = retrieve_telefonica_infra_providers
     @telefonica_security_protocols = retrieve_telefonica_security_protocols
     @telefonica_api_versions = retrieve_telefonica_api_versions
 
@@ -563,11 +556,6 @@ module EmsCommon
     ManageIQ::Providers::Openstack::Provider.pluck(:name, :id)
   end
 
-  # Click2Cloud: Added method to retrieve telefonica provider name and idf
-  def retrieve_telefonica_infra_providers
-    ManageIQ::Providers::Telefonica::Provider.pluck(:name, :id)
-  end
-
   def retrieve_openstack_api_versions
     [['Keystone v2', 'v2'], ['Keystone v3', 'v3']]
   end
@@ -593,6 +581,7 @@ module EmsCommon
     retrieve_security_protocols
   end
 
+  # Click2Cloud: Added method to retrieve telefonica security protocol
   def retrieve_telefonica_security_protocols
     retrieve_security_protocols
   end

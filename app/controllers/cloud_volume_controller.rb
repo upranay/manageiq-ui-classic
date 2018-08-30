@@ -149,8 +149,8 @@ class CloudVolumeController < ApplicationController
           javascript_flash(:spinner_off => true)
         end
       else
-        add_flash(_(volume.is_available_now_error_message(:detach_volume)), :error)
-        javascript_flash
+        add_flash(_(@volume.is_available_now_error_message(:detach_volume)), :error)
+        javascript_flash(:spinner_off => true)
       end
     end
   end
@@ -561,7 +561,7 @@ class CloudVolumeController < ApplicationController
     # Depending on the storage manager type, collect required form params.
     # Click2Cloud: Added telefonica as one of the storage manager type to collect required form params.
     case params[:emstype]
-    when "ManageIQ::Providers::StorageManager::CinderManager", "ManageIQ::Providers::Openstack::StorageManager::CinderManager", "ManageIQ::Providers::Telefonica::StorageManager::CinderManager"
+    when "ManageIQ::Providers::StorageManager::CinderManager", "ManageIQ::Providers::Openstack::StorageManager::CinderManager",  "ManageIQ::Providers::Telefonica::StorageManager::CinderManager"
       options.merge!(cinder_manager_options)
     when "ManageIQ::Providers::Amazon::StorageManager::Ebs"
       options.merge!(aws_ebs_options)

@@ -82,7 +82,7 @@ class ApplicationController < ActionController::Base
   before_action :set_user_time_zone
   before_action :set_gettext_locale
   before_action :allow_websocket
-  after_action :set_global_session_data, :except => [:resize_layout]
+  after_action :set_global_session_data, :except => %i(csp_report resize_layout)
 
   TIMELINES_FOLDER = Rails.root.join("product", "timelines")
 
@@ -124,6 +124,7 @@ class ApplicationController < ActionController::Base
       :cloudvolume                                                            => "list",
       :cloudvolumebackup                                                      => "list",
       :cloudvolumesnapshot                                                    => "list",
+      :cloudvolumetype                                                        => "list",
       :drift                                                                  => "expanded",
       :drift_mode                                                             => "details",
       :emscluster                                                             => "grid",
@@ -295,7 +296,7 @@ class ApplicationController < ActionController::Base
     redirect_to(:action => params[:tab], :id => params[:id])
   end
 
-  def download_summary_pdf
+  def download_summary_pdf(klass = self.class.model)
     # do not build quadicon links
     @embedded = true
     @showlinks = false
@@ -303,7 +304,7 @@ class ApplicationController < ActionController::Base
     # encode images and embed in HTML that is sent to Prince
     @base64_encode_images = true
 
-    @record = identify_record(params[:id])
+    @record = identify_record(params[:id], klass)
     yield if block_given?
     return if record_no_longer_exists?(@record)
     get_tagdata(@record) if @record.try(:taggings)
@@ -1566,7 +1567,7 @@ class ApplicationController < ActionController::Base
                               :prov_id    => @prov_id
         end
       else
-        javascript_redirect :controller => @redirect_controller, :action => @refresh_partial, :id => @redirect_id
+        javascript_redirect(:controller => @redirect_controller, :action => @refresh_partial, :id => @redirect_id, :template_klass => @template_klass_type)
       end
     elsif params[:pressed] == "ems_cloud_edit" && params[:id]
       javascript_redirect edit_ems_cloud_path(params[:id])
@@ -1757,6 +1758,7 @@ class ApplicationController < ActionController::Base
         end
       end
     else
+      @template_klass_type = template_types_for_controller
       @org_controller = "vm" # request originated from controller
       klass = VmOrTemplate
       @refresh_partial = typ ? "prov_edit" : "pre_prov"
@@ -1803,6 +1805,14 @@ class ApplicationController < ActionController::Base
   alias_method :instance_miq_request_new, :prov_redirect
   alias_method :vm_miq_request_new, :prov_redirect
   alias_method :miq_template_miq_request_new, :prov_redirect
+
+  def template_types_for_controller
+    if %w(ems_cluster ems_infra host resource_pool storage vm_infra).include?(request.parameters[:controller])
+      'infra'
+    else
+      'cloud'
+    end
+  end
 
   def vm_clone
     prov_redirect("clone")
