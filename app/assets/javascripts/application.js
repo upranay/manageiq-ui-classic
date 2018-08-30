@@ -1,8 +1,4 @@
 //= require ./miq_global
-//= require bower_components/es6-shim/es6-shim
-//= require bower_components/array-includes/array-includes
-//= require bower_components/fetch/fetch
-//= require jquery/dist/jquery.js
 //= require ./jquery_overrides
 //= require ./i18n
 //= require patternfly
@@ -32,7 +28,7 @@
 //= require bower_components/d3/d3
 //= require bower_components/c3/c3
 //= require bower_components/lodash/lodash
-//= require bower_components/kubernetes-topology-graph/dist/topology-graph
+//= require kubernetes-topology-graph/dist/topology-graph
 //= require ./miq_browser_detect
 //= require ./miq_application
 //= require ./miq_flash

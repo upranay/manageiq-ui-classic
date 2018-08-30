@@ -144,9 +144,6 @@ class AutomationManagerController < ApplicationController
       return
     end
 
-    if @record.kind_of?(ConfiguredSystem)
-      rec_cls = "#{model_to_type_name(@record.ext_management_system.class.to_s)}_configured_system"
-    end
     return unless @display == 'main'
   end
 
@@ -288,9 +285,9 @@ class AutomationManagerController < ApplicationController
       get_node_info("root")
     else
       @show_adv_search = false
-      options = {:model                 => "ConfiguredSystem",
-                 :named_scope           => [[:with_inventory_root_group, @inventory_group_record.id]],
-                 :gtl_dbname            => "automation_manager_configured_systems"}
+      options = {:model       => "ConfiguredSystem",
+                 :named_scope => [[:with_inventory_root_group, @inventory_group_record.id]],
+                 :gtl_dbname  => "automation_manager_configured_systems"}
       process_show_list(options)
       record_model = ui_lookup(:model => model || TreeBuilder.get_model_for_prefix(@nodetype))
       if @sb[:active_tab] == 'configured_systems'
@@ -338,6 +335,18 @@ class AutomationManagerController < ApplicationController
       process_show_list(options)
       @right_cell_text = _("All Ansible Tower Templates")
     end
+  end
+
+  def build_automation_manager_providers_tree(_type)
+    TreeBuilderAutomationManagerProviders.new(:automation_manager_providers_tree, :automation_manager_providers, @sb)
+  end
+
+  def build_automation_manager_cs_filter(_type)
+    TreeBuilderAutomationManagerConfiguredSystems.new(:automation_manager_cs_filter_tree, :automation_manager_cs_filter, @sb)
+  end
+
+  def build_configuration_scripts_tree(_type)
+    TreeBuilderAutomationManagerConfigurationScripts.new(:configuration_scripts_tree, :configuration_scripts, @sb)
   end
 
   def rebuild_trees(replace_trees)

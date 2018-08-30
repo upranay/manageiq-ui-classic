@@ -27,8 +27,7 @@ module Mixins
     def update_ems_button_cancel
       update_ems = find_record_with_rbac(model, params[:id])
       flash_to_session(_("Edit of %{model} \"%{name}\" was cancelled by the user") %
-        {:model => ui_lookup(:model => model.to_s), :name => update_ems.name}
-      )
+        {:model => ui_lookup(:model => model.to_s), :name => update_ems.name})
       url_args = {
         :action  => @lastaction == 'show_dashboard' ? 'show' : @lastaction,
         :id      => update_ems.id,
@@ -227,7 +226,7 @@ module Mixins
       @ems = params[:id] == 'new' ? model.new : find_record_with_rbac(model, params[:id])
       default_endpoint = @ems.default_endpoint
       default_security_protocol = default_endpoint.security_protocol || security_protocol_default
-      default_tls_verify = default_endpoint.verify_ssl != 0 ? true : false
+      default_tls_verify = default_endpoint.verify_ssl != 0
       default_tls_ca_certs = default_endpoint.certificate_authority || ""
 
       amqp_userid = ""
@@ -379,9 +378,10 @@ module Mixins
                        :default_security_protocol       => default_security_protocol,
                        :amqp_security_protocol          => amqp_security_protocol,
                        :provider_region                 => @ems.provider_region,
-                       :openstack_infra_providers_exist => retrieve_openstack_infra_providers.length > 0,
+                       :openstack_infra_providers_exist => retrieve_openstack_infra_providers.length.positive?,
                        :default_userid                  => @ems.authentication_userid.to_s,
                        :amqp_userid                     => amqp_userid,
+                       :ssh_keypair_userid              => ssh_keypair_userid,
                        :smartstate_docker_userid        => smartstate_docker_userid,
                        :service_account                 => service_account.to_s,
                        :azure_tenant_id                 => azure_tenant_id.to_s,
@@ -395,6 +395,7 @@ module Mixins
                        :ems_controller                  => controller_name,
                        :default_auth_status             => default_auth_status,
                        :amqp_auth_status                => amqp_auth_status,
+                       :ssh_keypair_auth_status         => ssh_keypair_auth_status.nil? ? true : ssh_keypair_auth_status,
                        :service_account_auth_status     => service_account_auth_status,
                        :amqp_fallback_hostname1         => amqp_fallback_hostname1 ? amqp_fallback_hostname1 : "",
                        :amqp_fallback_hostname2         => amqp_fallback_hostname2 ? amqp_fallback_hostname2 : "",
@@ -441,7 +442,7 @@ module Mixins
                         :kubevirt_tls_ca_certs         => kubevirt_tls_ca_certs,
                         :kubevirt_auth_status          => kubevirt_auth_status,
                         :kubevirt_password             => kubevirt_password,
-                        :kubevirt_password_exists      => @ems.authentication_token(:kubevirt).nil? ? false : true,
+                        :kubevirt_password_exists      => !@ems.authentication_token(:kubevirt).nil?,
       } if controller_name == "ems_infra"
 
       if controller_name == "ems_container"
@@ -463,7 +464,7 @@ module Mixins
                          :provider_region                     => @ems.provider_region,
                          :default_userid                      => @ems.authentication_userid.to_s,
                          :service_account                     => service_account.to_s,
-                         :bearer_token_exists                 => @ems.authentication_token(:bearer).nil? ? false : true,
+                         :bearer_token_exists                 => !@ems.authentication_token(:bearer).nil?,
                          :ems_controller                      => controller_name,
                          :default_auth_status                 => default_auth_status,
                          :metrics_auth_status                 => metrics_auth_status.nil? ? false : metrics_auth_status,
@@ -481,7 +482,7 @@ module Mixins
                          :kubevirt_tls_ca_certs               => kubevirt_tls_ca_certs,
                          :kubevirt_auth_status                => kubevirt_auth_status,
                          :kubevirt_password                   => kubevirt_password,
-                         :kubevirt_password_exists            => @ems.authentication_token(:kubevirt).nil? ? false : true,
+                         :kubevirt_password_exists            => !@ems.authentication_token(:kubevirt).nil?,
                          :virtualization_selection            => retrieve_virtualization_selection}
       end
 
@@ -524,7 +525,7 @@ module Mixins
       ems.provider_region        = params[:provider_region] if params[:provider_region]
       ems.api_version            = params[:api_version].strip if params[:api_version]
       ems.provider_id            = params[:provider_id]
-      ems.zone                   = Zone.find_by_name(params[:zone])
+      ems.zone                   = Zone.find_by(:name => params[:zone])
       ems.tenant_mapping_enabled = params[:tenant_mapping_enabled] == "on" if ems.class.supports_cloud_tenant_mapping?
       ems.security_protocol      = params[:default_security_protocol].strip if params[:default_security_protocol]
 
@@ -540,7 +541,7 @@ module Mixins
       metrics_database_name = params[:metrics_database_name].strip if params[:metrics_database_name]
       metrics_security_protocol = params[:metrics_security_protocol].strip if params[:metrics_security_protocol]
       metrics_tls_ca_certs = params[:metrics_tls_ca_certs].strip if params[:metrics_tls_ca_certs]
-      default_tls_ca_certs  = params[:default_tls_ca_certs].strip if params[:default_tls_ca_certs]
+      default_tls_ca_certs = params[:default_tls_ca_certs].strip if params[:default_tls_ca_certs]
       prometheus_alerts_tls_ca_certs = params[:prometheus_alerts_tls_ca_certs].strip if params[:prometheus_alerts_tls_ca_certs]
       prometheus_alerts_hostname = params[:prometheus_alerts_hostname].strip if params[:prometheus_alerts_hostname]
       prometheus_alerts_api_port = params[:prometheus_alerts_api_port].strip if params[:prometheus_alerts_api_port]
@@ -579,8 +580,10 @@ module Mixins
           amqp_endpoint = {:role => :amqp, :hostname => amqp_hostname, :port => amqp_port, :security_protocol => amqp_security_protocol}
         else
           ceilometer_endpoint = {:role => :ceilometer}
+        end
+      end
 
-      if ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)
+      if ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) || ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)
         ssh_keypair_endpoint = {:role => :ssh_keypair}
       end
 
@@ -633,7 +636,7 @@ module Mixins
 
       if ems.kind_of?(ManageIQ::Providers::Azure::CloudManager)
         ems.azure_tenant_id = params[:azure_tenant_id]
-        ems.subscription    = params[:subscription] unless params[:subscription].blank?
+        ems.subscription    = params[:subscription] if params[:subscription].present?
       end
 
       if ems.kind_of?(ManageIQ::Providers::ContainerManager)
@@ -689,7 +692,7 @@ module Mixins
       new_options = {}
       if ems.class.respond_to?(:advanced_settings)
         ems.class.advanced_settings.each do |section_name, section|
-          section[:settings].each do |opt, _|
+          section[:settings].each_key do |opt|
             new_options[section_name.to_sym] ||= {}
             value = params["provider_options_#{section_name}_#{opt}".to_sym]
             new_options[section_name.to_sym][opt.to_sym] = value if value.present?
@@ -698,7 +701,7 @@ module Mixins
       end
       if ems.class.respond_to?(:proxy_settings)
         new_options[:proxy_settings] = {}
-        ems.class.proxy_settings.each do |opt, _|
+        ems.class.proxy_settings.each_key do |opt|
           value = params["provider_options_proxy_settings_#{opt}".to_sym]
           new_options[:proxy_settings][opt] = value if value.present?
         end
@@ -734,7 +737,7 @@ module Mixins
       authentications = build_credentials(ems, mode)
       configurations = []
 
-      [:default, :ceilometer, :amqp, :amqp_fallback1, :amqp_fallback2, :console, :smartstate_docker, :ssh_keypair, :metrics, :hawkular, :prometheus, :prometheus_alerts, :kubevirt].each do |role|
+      %i(default ceilometer amqp amqp_fallback1 amqp_fallback2 console smartstate_docker ssh_keypair metrics hawkular prometheus prometheus_alerts kubevirt).each do |role|
         configurations << build_configuration(ems, authentications, endpoints, role)
       end
 
@@ -771,12 +774,9 @@ module Mixins
         smartstate_docker_password = params[:smartstate_docker_password] ? params[:smartstate_docker_password] : ems.authentication_password(:smartstate_docker)
         creds[:smartstate_docker] = {:userid => params[:smartstate_docker_userid], :password => smartstate_docker_password, :save => true}
       end
-      if ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) &&
-         ems.supports_authentication?(:ssh_keypair) && params[:ssh_keypair_userid]
-        ssh_keypair_password = params[:ssh_keypair_password] ? params[:ssh_keypair_password].gsub(/\r\n/, "\n") : ems.authentication_key(:ssh_keypair)
-        creds[:ssh_keypair] = {:userid => params[:ssh_keypair_userid], :auth_key => ssh_keypair_password, :save => (mode != :validate)}
-      end
-      if ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager) &&
+      if (ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) ||
+          ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) ||
+          ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)) &&
          ems.supports_authentication?(:ssh_keypair) && params[:ssh_keypair_userid]
         ssh_keypair_password = params[:ssh_keypair_password] ? params[:ssh_keypair_password].gsub(/\r\n/, "\n") : ems.authentication_key(:ssh_keypair)
         creds[:ssh_keypair] = {:userid => params[:ssh_keypair_userid], :auth_key => ssh_keypair_password, :save => (mode != :validate)}
@@ -795,7 +795,7 @@ module Mixins
       if ems.supports_authentication?(:auth_key) && params[:service_account]
         creds[:default] = {:auth_key => params[:service_account], :userid => "_", :save => (mode != :validate)}
       end
-      if ems.supports_authentication?(:oauth) && !session[:oauth_response].blank?
+      if ems.supports_authentication?(:oauth) && session[:oauth_response].present?
         auth = session[:oauth_response]
         credentials = auth["credentials"]
         creds[:oauth] = {:refresh_token => credentials["refresh_token"],
@@ -833,7 +833,7 @@ module Mixins
 
     def construct_edit_for_audit(ems)
       @edit ||= {}
-      ems.kind_of?(ManageIQ::Providers::Azure::CloudManager) ? azure_tenant_id = ems.azure_tenant_id : azure_tenant_id = nil
+      azure_tenant_id = ems.kind_of?(ManageIQ::Providers::Azure::CloudManager) ? ems.azure_tenant_id : nil
       @edit[:current] = {
         :name                  => ems.name,
         :provider_region       => ems.provider_region,

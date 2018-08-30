@@ -66,31 +66,36 @@ module ApplicationHelper::PageLayouts
   end
 
   def layout_uses_tabs?
-    if (["timeline"].include?(@layout) && ! @in_a_form) ||
-       ["login", "authenticate", "auth_error"].include?(controller.action_name) ||
-       @layout == "exception" ||
-       (@layout == 'vm' && controller.action_name == 'edit') ||
-       (@layout == "report" && ["new", "create", "edit", "copy", "update", "explorer"].include?(controller.action_name))
-      return false
-    elsif %w(container_dashboard dashboard ems_infra_dashboard).include?(@layout) ||
-          (%w(dashboard).include?(@showtype) && @lastaction.to_s.ends_with?("_dashboard")) ||
-          %w(topology).include?(@showtype)
-      # Dashboard tabs are located in taskbar because they are otherwise hidden behind the taskbar regardless of z-index
-      return false
-    elsif @layout == "monitor_alerts_overview" ||
-          @layout == "monitor_alerts_list" ||
-          @layout == "monitor_alerts_most_recent"
-      return false
-    end
-    true
+    return false if %w(login authenticate auth_error).include?(controller.action_name)
+
+    layout = case @layout
+             when 'container_dashboard', 'dashboard', 'ems_infra_dashboard', 'exception',
+                  'monitor_alerts_list', 'monitor_alerts_most_recent', 'monitor_alerts_overview'
+               false
+             when 'report'
+               !%w(new create edit copy update explorer).include?(controller.action_name)
+             when 'timeline'
+               @in_a_form
+             when 'vm'
+               controller.action_name != 'edit'
+             else
+               true
+             end
+
+    showtype = case @showtype
+               when 'dashboard'
+                 !@lastaction.to_s.ends_with?("_dashboard")
+               when 'topology'
+                 false
+               else
+                 true
+               end
+
+    layout && showtype
   end
 
   def layout_uses_breadcrumbs?
-    !["dashboard",
-      "exception",
-      "support",
-      "configuration",
-      "rss"].include?(@layout)
+    !%w(dashboard exception support configuration rss).include?(@layout)
   end
 
   def dashboard_no_listnav?
@@ -135,7 +140,7 @@ module ApplicationHelper::PageLayouts
   def saved_report_paging?
     # saved report doesn't use miq_report object,
     # need to use a different paging view to page thru a saved report
-    @sb[:pages] && @html && [:reports_tree, :savedreports_tree, :cb_reports_tree].include?(x_active_tree)
+    @sb[:pages] && @html && %i(reports_tree savedreports_tree cb_reports_tree).include?(x_active_tree)
   end
 
   def show_advanced_search?
@@ -155,6 +160,7 @@ module ApplicationHelper::PageLayouts
       cloud_volume
       cloud_volume_backup
       cloud_volume_snapshot
+      cloud_volume_type
       configuration_job
       container
       container_build
