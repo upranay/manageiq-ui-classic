@@ -8,15 +8,14 @@ module Mixins
     OPENSTACK_PARAMS = %i(name provider_region api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port default_userid event_stream_selection).freeze
     OPENSTACK_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port amqp_userid event_stream_selection).freeze
     # Click2Cloud: Added telefonica parmas and amqp params
-    TELEFONICA_PARAMS = %i(name provider_region api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port default_userid event_stream_selection).freeze
-    TELEFONICA_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port amqp_userid event_stream_selection).freeze
+    TELEFONICA_PARAMS = %i(name provider_region api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port project_name domain_name default_userid event_stream_selection).freeze
+    TELEFONICA_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port project_name domain_name amqp_userid event_stream_selection).freeze
 
     included do
       include Mixins::GenericFormMixin
     end
 
     def update
-      byebug
       assert_privileges("#{permission_prefix}_edit")
       case params[:button]
       when "cancel"   then update_ems_button_cancel
@@ -73,7 +72,6 @@ module Mixins
     end
 
     def update_ems_button_validate
-      byebug
       result, details = realtime_authentication_check
       render_validation_result(result, details)
     end
