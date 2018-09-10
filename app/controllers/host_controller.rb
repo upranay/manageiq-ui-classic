@@ -338,7 +338,7 @@ class HostController < ApplicationController
       providehosts if params[:pressed] == "host_provide"
 
       # Handle Host power buttons
-      if ["host_shutdown", "host_reboot", "host_standby", "host_enter_maint_mode", "host_exit_maint_mode",
+      if ["host_shutdown", "host_reboot", "host_lock", "host_unlock", "host_standby", "host_enter_maint_mode", "host_exit_maint_mode",
           "host_start", "host_stop", "host_reset"].include?(params[:pressed])
         powerbutton_hosts(params[:pressed].split("_")[1..-1].join("_")) # Handle specific power button
       end

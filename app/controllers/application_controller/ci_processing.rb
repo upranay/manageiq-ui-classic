@@ -561,6 +561,22 @@ module ApplicationController::CiProcessing
   alias_method :instance_guest_restart, :guestreboot
   alias_method :vm_guest_restart, :guestreboot
 
+  # #Lock on all selected or single displayed vm(s)
+  def guestlock
+    assert_privileges(params[:pressed])
+    generic_button_operation('lock_guest', _('Lock Guest'), vm_button_action)
+  end
+  alias_method :instance_guest_lock, :guestlock
+  alias_method :vm_guest_lock, :guestlock
+
+  #Unlock on all selected or single displayed vm(s)
+  def guestunlock
+    assert_privileges(params[:pressed])
+    generic_button_operation('unlock_guest', _('Unlock Guest'), vm_button_action)
+  end
+  alias_method :instance_guest_unlock, :guestunlock
+  alias_method :vm_guest_unlock, :guestunlock
+
   # Delete all snapshots for vm(s)
   def deleteallsnapsvms
     assert_privileges(params[:pressed])
@@ -1018,6 +1034,8 @@ module ApplicationController::CiProcessing
     when "#{pfx}_guest_shutdown"            then guestshutdown
     when "#{pfx}_guest_standby"             then gueststandby
     when "#{pfx}_guest_restart"             then guestreboot
+    when "#{pfx}_guest_lock"                then guestlock
+    when "#{pfx}_guest_unlock"              then guestunlock
     when "#{pfx}_miq_request_new"           then prov_redirect
     when "#{pfx}_clone"                     then prov_redirect("clone")
     when "#{pfx}_migrate"                   then prov_redirect("migrate")

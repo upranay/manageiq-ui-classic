@@ -5,6 +5,8 @@ module Mixins
         # Handle the Host power buttons
         POWER_BUTTON_NAMES = {
           "reboot"           => _("Restart"),
+          "lock"             => _("Lock"),
+          "unlock"           => _("Unlock"),
           "start"            => _("Power On"),
           "stop"             => _("Power Off"),
           "enter_maint_mode" => _("Enter Maintenance Mode"),
@@ -18,7 +20,7 @@ module Mixins
         end
 
         def host_power_button?(button_code)
-          %w(host_shutdown host_reboot host_standby host_enter_maint_mode
+          %w(host_shutdown host_reboot host_lock host_unlock host_standby host_enter_maint_mode
              host_exit_maint_mode host_start host_stop host_reset).include?(button_code)
         end
 

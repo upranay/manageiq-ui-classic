@@ -10,6 +10,10 @@ module ApplicationHelper
         _("Delete")
       when "reboot_guest"
         _("Restart Guest")
+      when "lock_guest"
+        _("Lock Guest")
+      when "unlock_guest"
+        _("Unlock Guest")
       when "retire_now"
         _("Retirement")
       when "scan"
