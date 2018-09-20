@@ -1,6 +1,6 @@
 module ApplicationHelper::Toolbar::Cloud::InstanceOperationsButtonGroupMixin
   def self.included(included_class)
-    included_class.button_group('instance_operations', [
+  included_class.button_group('instance_operations', [
       included_class.select(
         :instance_power_choice,
         'fa fa-power-off fa-lg',
@@ -72,6 +72,15 @@ module ApplicationHelper::Toolbar::Cloud::InstanceOperationsButtonGroupMixin
             :options => {:feature => :start}),
           included_class.separator,
           included_class.button(
+            :instance_guest_restart,
+            nil,
+            N_('Soft Reboot this Instance'),
+            N_('Soft Reboot'),
+            :icon    => "pficon pficon-restart fa-lg",
+            :confirm => N_("Soft Reboot this Instance?"),
+            :klass   => ApplicationHelper::Button::GenericFeatureButton,
+            :options => {:feature => :reboot_guest}),
+          included_class.button(
             :instance_guest_lock,
             nil,
             N_('Lock this Instance'),
@@ -85,20 +94,11 @@ module ApplicationHelper::Toolbar::Cloud::InstanceOperationsButtonGroupMixin
             nil,
             N_('Unlock this Instance'),
             N_('Unlock'),
-            :icon    => "pficon pficon-unlocked fa-lg",
+            :icon    => "pficon pficon-locked fa-lg",
             :confirm => N_("Unlock this Instance?"),
             :klass   => ApplicationHelper::Button::GenericFeatureButton,
-            :options => {:feature => :unlock_guest}),
-          included_class.button(
-            :instance_guest_restart,
-            nil,
-            N_('Soft Reboot this Instance'),
-            N_('Soft Reboot'),
-            :icon    => "pficon pficon-restart fa-lg",
-            :confirm => N_("Soft Reboot this Instance?"),
-            :klass   => ApplicationHelper::Button::GenericFeatureButton,
-            :options => {:feature => :reboot_guest}),
-          included_class.button(
+          :options => {:feature => :unlock_guest}),
+      included_class.button(
             :instance_reset,
             nil,
             N_('Hard Reboot the Guest OS on this Instance'),
@@ -118,7 +118,7 @@ module ApplicationHelper::Toolbar::Cloud::InstanceOperationsButtonGroupMixin
         ]
       ),
     ])
-    included_class.button_group('vm_access', [
+  included_class.button_group('vm_access', [
       included_class.select(
         :vm_remote_access_choice,
         'fa pficon-screen fa-lg',

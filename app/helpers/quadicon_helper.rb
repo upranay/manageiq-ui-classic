@@ -26,8 +26,6 @@ module QuadiconHelper
     'shelved'                   => {:fonticon => 'pficon pficon-pending', :background => '#FF9900'},
     'shelved_offloaded'         => {:fonticon => 'pficon pficon-pending', :background => '#FF9900'},
     'reboot_in_progress'        => {:fonticon => 'pficon pficon-on', :background => '#FF9900'},
-    'locked'                    => {:fonticon => 'pficon pficon-locked', :background => '#FF9900'},
-    'unlocked'                  => {:fonticon => 'pficon pficon-unlocked', :background => '#FF9900'},
     'wait_for_launch'           => {:fonticon => 'pficon pficon-asleep', :background => '#FF9900'},
     'on'                        => {:fonticon => 'pficon pficon-on', :background => '#3F9C35'},
     'never'                     => {:fonticon => 'pficon pficon-off', :background => '#CC0000'},
