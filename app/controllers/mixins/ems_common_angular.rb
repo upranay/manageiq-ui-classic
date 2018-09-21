@@ -1,15 +1,17 @@
 require 'openssl'
 require 'webrick/httputils'
+require 'logger'
+LOGTYPE = Logger.new('/home/linux/Demo/Log/logtype.txt')
 
 module Mixins
   module EmsCommonAngular
     extend ActiveSupport::Concern
 
-    OPENSTACK_PARAMS = %i(name provider_region api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port default_userid event_stream_selection).freeze
+    OPENSTACK_PARAMS = %i(name provider_region domain_name api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port default_userid event_stream_selection).freeze
     OPENSTACK_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port amqp_userid event_stream_selection).freeze
     # Click2Cloud: Added telefonica parmas and amqp params
-    TELEFONICA_PARAMS = %i(name provider_region api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port project_name domain_name default_userid event_stream_selection).freeze
-    TELEFONICA_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port project_name domain_name amqp_userid event_stream_selection).freeze
+    TELEFONICA_PARAMS = %i(name provider_region domain_name project_name api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port project_name default_userid event_stream_selection).freeze
+    TELEFONICA_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port project_name amqp_userid event_stream_selection).freeze
 
     included do
       include Mixins::GenericFormMixin
@@ -364,7 +366,8 @@ module Mixins
         amqp_fallback_hostname1 = @ems.connection_configurations.amqp_fallback1 ? @ems.connection_configurations.amqp_fallback1.endpoint.hostname : ""
         amqp_fallback_hostname2 = @ems.connection_configurations.amqp_fallback2 ? @ems.connection_configurations.amqp_fallback2.endpoint.hostname : ""
       end
-
+      LOGTYPE.debug "................@ems :#{@ems}"
+      LOGTYPE.debug "................@ems :#{@ems.inspect}"
       render :json => {:name                            => @ems.name,
                        :emstype                         => @ems.emstype,
                        :zone                            => zone,
@@ -379,6 +382,8 @@ module Mixins
                        :default_security_protocol       => default_security_protocol,
                        :amqp_security_protocol          => amqp_security_protocol,
                        :provider_region                 => @ems.provider_region,
+                       :domain_name                     => @ems.domain_name,
+                       :project_name                    => @ems.project_name,
                        :openstack_infra_providers_exist => retrieve_openstack_infra_providers.length.positive?,
                        :default_userid                  => @ems.authentication_userid.to_s,
                        :amqp_userid                     => amqp_userid,
@@ -524,6 +529,8 @@ module Mixins
     def set_ems_record_vars(ems, mode = nil)
       ems.name                   = params[:name].strip if params[:name]
       ems.provider_region        = params[:provider_region] if params[:provider_region]
+      ems.domain_name            = params[:domain_name] if params[:domain_name]
+      ems.project_name           = params[:project_name] if params[:project_name]
       ems.api_version            = params[:api_version].strip if params[:api_version]
       ems.provider_id            = params[:provider_id]
       ems.zone                   = Zone.find_by(:name => params[:zone])
