@@ -528,6 +528,8 @@ module EmsCommon
     @ems_types = Array(model.supported_types_and_descriptions_hash.invert).sort_by(&:first)
 
     @provider_regions = retrieve_provider_regions
+    @domain_name = retrieve_domain_name
+    @project_name = retrieve_project_name
     @openstack_infra_providers = retrieve_openstack_infra_providers
     @openstack_security_protocols = retrieve_openstack_security_protocols
     # Click2Cloud: Added telefonica infra providers, secruity protocol and api versions
@@ -550,15 +552,39 @@ module EmsCommon
   end
 
   def retrieve_provider_regions
+        managers = model.supported_subclasses.select(&:supports_regions?)
+        managers.each_with_object({}) do |manager, provider_regions|
+          regions = manager.parent::Regions.all.sort_by { |r| r[:description] }
+          provider_regions[manager.ems_type] = regions.map do |region|
+            [region[:description], region[:name]]
+          end
+    end
+  end
+
+  def retrieve_domain_name
     managers = model.supported_subclasses.select(&:supports_regions?)
-    managers.each_with_object({}) do |manager, provider_regions|
+    managers.each_with_object({}) do |manager, domain_name|
       regions = manager.parent::Regions.all.sort_by { |r| r[:description] }
-      provider_regions[manager.ems_type] = regions.map do |region|
+      domain_name[manager.ems_type] = regions.map do |region|
         [region[:description], region[:name]]
       end
     end
   end
+
+  def retrieve_project_name
+    managers = model.supported_subclasses.select(&:supports_regions?)
+    managers.each_with_object({}) do |manager, project_name|
+      regions = manager.parent::Regions.all.sort_by { |r| r[:description] }
+      project_name[manager.ems_type] = regions.map do |region|
+        [region[:description], region[:name]]
+      end
+    end
+  end
+
   private :retrieve_provider_regions
+  private :retrieve_domain_name
+  private :retrieve_project_name
+
 
   def retrieve_openstack_infra_providers
     ManageIQ::Providers::Openstack::Provider.pluck(:name, :id)
