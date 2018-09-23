@@ -41,7 +41,6 @@
                               "style"       => "color: black; font-weight: normal;"}
             = @emstype_display
 
-
     .form-group{"ng-class" => "{'has-error': angularForm.provider_region.$invalid}", "ng-if" => "#{@provider_regions.keys.to_json}.includes(emsCommonModel.emstype)", "ng-switch" => "", "on" => "emsCommonModel.emstype"}
       %label.col-md-2.control-label{"for" => "ems_region"}
         = _('Region')
@@ -207,6 +206,7 @@
                      "id"                          => "ems_infra_provider_id",
                      "checkchange"                 => "",
                      "selectpicker-for-select-tag" => "")
+
     .form-group{"ng-class" => "{'has-error': angularForm.domain_name.$invalid}", "ng-if" => "emsCommonModel.emstype == 'telefonica'"}
       %label.col-md-2.control-label{"for" => "ems_domain_name"}
         = _('Domain Name')
@@ -215,11 +215,12 @@
                             "id"          => "ems_domain_name",
                             "name"        => "domain_name",
                             "ng-model"    => "emsCommonModel.domain_name",
+                            "maxlength"   => "#{ViewHelper::MAX_NAME_LEN}",
                             "required"    => "",
-                            "checkchange" => "",
-                            "auto-focus"  => ""}
-        %span.help-block{"ng-show" => "angularForm.name.$error.required"}
+                            "checkchange" => ""}
+        %span.help-block{"ng-show" => "angularForm.domain_name.$error.required"}
           = _("Required")
+
     .form-group{"ng-class" => "{'has-error': angularForm.project_name.$invalid}", "ng-if" => "emsCommonModel.emstype == 'telefonica'"}
       %label.col-md-2.control-label{"for" => "ems_project_name"}
         = _('Project Name')
@@ -228,10 +229,10 @@
                             "id"          => "ems_project_name",
                             "name"        => "project_name",
                             "ng-model"    => "emsCommonModel.project_name",
+                            "maxlength"   => "#{ViewHelper::MAX_NAME_LEN}",
                             "required"    => "",
-                            "checkchange" => "",
-                            "auto-focus"  => ""}
-        %span.help-block{"ng-show" => "angularForm.name.$error.required"}
+                            "checkchange" => ""}
+        %span.help-block{"ng-show" => "angularForm.project_name.$error.required"}
           = _("Required")
 
     .form-group{"ng-class" => "{'has-error': angularForm.zone.$invalid}"}
