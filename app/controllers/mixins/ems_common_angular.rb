@@ -1,13 +1,11 @@
 require 'openssl'
 require 'webrick/httputils'
-require 'logger'
-LOGTYPE = Logger.new('/home/linux/Demo/Log/logtype.txt')
 
 module Mixins
   module EmsCommonAngular
     extend ActiveSupport::Concern
 
-    OPENSTACK_PARAMS = %i(name provider_region domain_name api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port default_userid event_stream_selection).freeze
+    OPENSTACK_PARAMS = %i(name provider_region api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port default_userid event_stream_selection).freeze
     OPENSTACK_AMQP_PARAMS = %i(name provider_region api_version amqp_security_protocol keystone_v3_domain_id amqp_hostname amqp_api_port amqp_userid event_stream_selection).freeze
     # Click2Cloud: Added telefonica parmas and amqp params
     TELEFONICA_PARAMS = %i(name provider_region domain_name project_name api_version default_security_protocol keystone_v3_domain_id default_hostname default_api_port project_name default_userid event_stream_selection).freeze
@@ -378,8 +376,6 @@ module Mixins
         amqp_fallback_hostname1 = @ems.connection_configurations.amqp_fallback1 ? @ems.connection_configurations.amqp_fallback1.endpoint.hostname : ""
         amqp_fallback_hostname2 = @ems.connection_configurations.amqp_fallback2 ? @ems.connection_configurations.amqp_fallback2.endpoint.hostname : ""
       end
-      LOGTYPE.debug "................@ems :#{@ems}"
-      LOGTYPE.debug "................@ems :#{@ems.inspect}"
       render :json => {:name                            => @ems.name,
                        :emstype                         => @ems.emstype,
                        :zone                            => zone,
