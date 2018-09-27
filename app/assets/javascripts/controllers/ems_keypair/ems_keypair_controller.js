@@ -63,7 +63,6 @@
   };
 
   EmsKeypairController.prototype.showValidate = function(tab) {
-    var telefonicaAndNew = (this.model.emstype === 'telefonica_infra') && this.newRecord;
     var openstackInfraAndNew = (this.model.emstype === 'openstack_infra') && this.newRecord;
     var openstackCloud = this.model.emstype === 'openstack';
     var rhevm = this.model.emstype === 'rhevm';

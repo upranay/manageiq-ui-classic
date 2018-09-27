@@ -31,7 +31,7 @@ module EmsClusterHelper::TextualSummary
 
   def textual_group_configuration
     return nil if @record.ha_enabled.nil? && @record.ha_admit_control.nil? && @record.drs_enabled.nil? &&
-                  @record.drs_automation_level.nil? && @record.drs_migration_threshold.nil?
+      @record.drs_automation_level.nil? && @record.drs_migration_threshold.nil?
     TextualGroup.new(
       _("Configuration"),
       %i(ha_enabled ha_admit_control drs_enabled drs_automation_level drs_migration_threshold)
@@ -43,13 +43,6 @@ module EmsClusterHelper::TextualSummary
     ret = textual_generate_openstack_status
 
     ret.blank? ? nil : TextualMultilink.new(_("OpenStack Status"), :items => ret)
-  end
-
-  def textual_group_telefonica_status
-    return nil unless @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::EmsCluster)
-    ret = textual_generate_telefonica_status
-
-    ret.blank? ? nil : TextualMultilink.new(_("Telefonica Status"), :items => ret)
   end
 
   #
@@ -115,11 +108,11 @@ module EmsClusterHelper::TextualSummary
                  :icon  => failed_count == 0 && running_count > 0 ? 'pficon pficon-ok' : nil,
                  :link  => if running_count > 0
                              url_for_only_path(:controller              => controller.controller_name,
-                                     :action                  => 'show',
-                                     :id                      => @record,
-                                     :display                 => 'hosts',
-                                     :host_service_group_name => x.name,
-                                     :status                  => :running)
+                                               :action                  => 'show',
+                                               :id                      => @record,
+                                               :display                 => 'hosts',
+                                               :host_service_group_name => x.name,
+                                               :status                  => :running)
                            end}
 
       failed = {:title => _("Show list of hosts with failed %{name}") % {:name => x.name},
@@ -127,11 +120,11 @@ module EmsClusterHelper::TextualSummary
                 :icon  => failed_count > 0 ? 'pficon pficon-error-circle-o' : nil,
                 :link  => if failed_count > 0
                             url_for_only_path(:controller              => controller.controller_name,
-                                    :action                  => 'show',
-                                    :id                      => @record,
-                                    :display                 => 'hosts',
-                                    :host_service_group_name => x.name,
-                                    :status                  => :failed)
+                                              :action                  => 'show',
+                                              :id                      => @record,
+                                              :display                 => 'hosts',
+                                              :host_service_group_name => x.name,
+                                              :status                  => :failed)
                           end}
 
       all = {:title => _("Show list of hosts with %{name}") % {:name => x.name},
@@ -139,11 +132,11 @@ module EmsClusterHelper::TextualSummary
              :icon  => 'pficon pficon-container-node',
              :link  => if all_count > 0
                          url_for_only_path(:controller              => controller.controller_name,
-                                 :action                  => 'show',
-                                 :display                 => 'hosts',
-                                 :id                      => @record,
-                                 :host_service_group_name => x.name,
-                                 :status                  => :all)
+                                           :action                  => 'show',
+                                           :display                 => 'hosts',
+                                           :id                      => @record,
+                                           :host_service_group_name => x.name,
+                                           :status                  => :all)
                        end}
 
       sub_items = [running, failed, all]
@@ -222,7 +215,7 @@ module EmsClusterHelper::TextualSummary
   end
 
   def textual_total_miq_templates
-    return nil if @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::EmsCluster) || @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::EmsCluster)
+    return nil if @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::EmsCluster)
 
     num = @record.total_miq_templates
     h = {:label => _("All Templates"), :icon => "pficon pficon-virtual-machine", :value => num}
@@ -244,7 +237,7 @@ module EmsClusterHelper::TextualSummary
   end
 
   def textual_rps_size
-    return nil if @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::EmsCluster) || @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::EmsCluster)
+    return nil if @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::EmsCluster)
 
     textual_link(@record.resource_pools,
                  :as   => ResourcePool,
