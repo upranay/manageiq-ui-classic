@@ -1,7 +1,5 @@
 require 'openssl'
 require 'webrick/httputils'
-require 'logger'
-LOGTYPE = Logger.new('/home/linux/Demo/Log/logtype.txt')
 
 module Mixins
   module EmsCommonAngular
@@ -366,8 +364,7 @@ module Mixins
         amqp_fallback_hostname1 = @ems.connection_configurations.amqp_fallback1 ? @ems.connection_configurations.amqp_fallback1.endpoint.hostname : ""
         amqp_fallback_hostname2 = @ems.connection_configurations.amqp_fallback2 ? @ems.connection_configurations.amqp_fallback2.endpoint.hostname : ""
       end
-      LOGTYPE.debug "................@ems :#{@ems}"
-      LOGTYPE.debug "................@ems :#{@ems.inspect}"
+
       render :json => {:name                            => @ems.name,
                        :emstype                         => @ems.emstype,
                        :zone                            => zone,
@@ -591,7 +588,7 @@ module Mixins
         end
       end
 
-      if ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) || ems.kind_of?(ManageIQ::Providers::Telefonica::CloudManager) || ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager) || ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)
+      if ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) || ems.kind_of?(ManageIQ::Providers::Telefonica::CloudManager) || ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) || ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)
         ssh_keypair_endpoint = {:role => :ssh_keypair}
       end
 
@@ -783,11 +780,10 @@ module Mixins
         creds[:smartstate_docker] = {:userid => params[:smartstate_docker_userid], :password => smartstate_docker_password, :save => true}
       end
       if (ems.kind_of?(ManageIQ::Providers::Openstack::InfraManager) ||
-          ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) ||
-          ems.kind_of?(ManageIQ::Providers::Telefonica::InfraManager) ||
-          ems.kind_of?(ManageIQ::Providers::Telefonica::CloudManager) ||
-          ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)) &&
-         ems.supports_authentication?(:ssh_keypair) && params[:ssh_keypair_userid]
+        ems.kind_of?(ManageIQ::Providers::Openstack::CloudManager) ||
+        ems.kind_of?(ManageIQ::Providers::Telefonica::CloudManager) ||
+        ems.kind_of?(ManageIQ::Providers::Redhat::InfraManager)) &&
+        ems.supports_authentication?(:ssh_keypair) && params[:ssh_keypair_userid]
         ssh_keypair_password = params[:ssh_keypair_password] ? params[:ssh_keypair_password].gsub(/\r\n/, "\n") : ems.authentication_key(:ssh_keypair)
         creds[:ssh_keypair] = {:userid => params[:ssh_keypair_userid], :auth_key => ssh_keypair_password, :save => (mode != :validate)}
       end
