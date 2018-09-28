@@ -1,12 +1,7 @@
 module TreeNode
   class VmOrTemplate < Node
-    set_attributes(:image, :icon) do
-      if @object.normalized_state.downcase == 'archived'
-        icon = "fa fa-archive"
-      else
-        image = "svg/currentstate-#{@object.normalized_state.downcase}.svg"
-      end
-      [image, icon]
+    set_attributes(:icon, :icon_background) do
+      QuadiconHelper.machine_state(@object.normalized_state).values_at(:fonticon, :background)
     end
 
     set_attribute(:tooltip) do
