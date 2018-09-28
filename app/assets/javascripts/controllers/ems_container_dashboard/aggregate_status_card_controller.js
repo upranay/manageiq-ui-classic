@@ -43,15 +43,19 @@ angular.module( 'patternfly.card' ).controller('aggregateStatusCardContainerCont
       // icon/notifications and other info for providers
       var providers_info = data.providers[0];
 
-      vm.status = {
-        "iconImage": providers_info[0].iconImage,
-        "largeIcon": true,
-        "notifications":[
-          {
-            "iconImage": providers_info[0].statusIcon,
-          },
-        ],
-      };
+      if (typeof providers_info[0] === 'undefined') {
+        vm.status = {};
+      } else {
+        vm.status = {
+          "iconImage": providers_info[0].iconImage,
+          "largeIcon": true,
+          "notifications": [
+            {
+              "iconClass": providers_info[0].statusIcon,
+            },
+          ],
+        };
+      }
 
       // show total providers count and link on Containers dashboard only
       if(all_providers_info !== null && typeof all_providers_info.href !== 'undefined') {
@@ -67,6 +71,7 @@ angular.module( 'patternfly.card' ).controller('aggregateStatusCardContainerCont
             "iconClass": data.alerts.notifications[0].iconClass,
             "href": data.alerts.href,
             "count": data.alerts.notifications[0].count,
+            "dataAvailable": data.alerts.dataAvailable,
           },
         ],
       };
@@ -80,10 +85,6 @@ angular.module( 'patternfly.card' ).controller('aggregateStatusCardContainerCont
           "title": attrHsh[attributes[i]],
           "count": dataStatus.count,
           "href": dataStatus.href,
-          "notification": {
-            "iconClass": "pficon pficon-error-circle-o",
-            "count": 0,
-          },
         });
       }
       vm.loadingDone = true;

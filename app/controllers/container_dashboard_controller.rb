@@ -13,10 +13,11 @@ class ContainerDashboardController < ApplicationController
     if params[:id].nil?
       @breadcrumbs.clear
     end
+    @title = title
   end
 
   def index
-    redirect_to :action => 'show'
+    redirect_to(:action => 'show')
   end
 
   def data

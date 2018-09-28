@@ -4,11 +4,10 @@
     %aggregate-status-card{:provider_id => @record.id, :provider_type => 'ems_physical_infra'}
   .row.row-tile-pf
     .col-xs-12.col-sm-12.col-md-6
-      = render :partial => "group-chart"
+      %server-health-pie-chart{:provider_id => @record.id}
   .row.row-tile-pf
     .col-xs-12.col-sm-12.col-md-6
-      = render :partial => "recent-servers-line-chart"
+      %recent-servers-line-chart{:provider_id => @record.id}
 
   :javascript
-    ManageIQ.angular.app.value('providerId', '#{@record.id}');
     miq_bootstrap('.ems-physical-infra-dashboard');

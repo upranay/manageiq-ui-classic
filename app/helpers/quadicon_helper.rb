@@ -7,9 +7,9 @@ module QuadiconHelper
   }.freeze
 
   MACHINE_STATE_QUADRANT = {
-    'archived'                  => {:text => 'A', :background => '#336699'},
-    'orphaned'                  => {:text => 'O', :background => '#336699'},
-    'retired'                   => {:text => 'R', :background => '#336699'},
+    'archived'                  => {:fonticon => 'fa fa-archive', :background => '#336699'},
+    'orphaned'                  => {:fonticon => 'ff ff-orphaned', :background => '#336699'},
+    'retired'                   => {:fonticon => 'fa fa-clock-o', :background => '#336699'},
     'unknown'                   => {:fonticon => 'pficon pficon-unknown', :background => '#336699'},
     'preparing_for_maintenance' => {:fonticon => 'pficon pficon-maintenance', :background => '#336699'},
     'maintenance'               => {:fonticon => 'pficon pficon-maintenance', :background => '#336699'},

@@ -40,14 +40,14 @@ describe TreeBuilderInstances do
 
     expect(providers).to eq([@vm_cloud_with_az.ext_management_system,
                              @vm_cloud_without_az.ext_management_system,
-                             {:id    => "arch",
-                              :text  => "<Archived>",
-                              :image => "svg/currentstate-archived.svg",
-                              :tip   => "Archived Instances"},
-                             {:id    => "orph",
-                              :text  => "<Orphaned>",
-                              :image => "svg/currentstate-orphaned.svg",
-                              :tip   => "Orphaned Instances"}])
+                             {:id   => "arch",
+                              :text => "<Archived>",
+                              :icon => "fa fa-archive",
+                              :tip  => "Archived Instances"},
+                             {:id   => "orph",
+                              :text => "<Orphaned>",
+                              :icon => "ff ff-orphaned",
+                              :tip  => "Orphaned Instances"}])
   end
 
   it 'sets availability zones correctly if vms are hidden' do
