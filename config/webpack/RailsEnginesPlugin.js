@@ -58,7 +58,7 @@ module.exports = class RailsEnginesPlugin {
         targetEngineModules = this.shared.root;
       }
 
-      if (this.shared.packages.includes(packageName)) {
+      if (this.shared.packages.includes(packageName) || engine.fallback) {
         targetEngineModules = this.shared.root;
       }
 
