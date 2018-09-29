@@ -77,8 +77,11 @@
     "babel-preset-stage-1": "^6.24.1",
     "compression-webpack-plugin": "~1.1.11",
     "css-loader": "~0.28.11",
+<<<<<<< HEAD
     "duplicate-package-checker-webpack-plugin": "~3.0.0",
     "enhanced-resolve": "~4.0.0",
+=======
+>>>>>>> 2e70233fb... Update webpack, loaders and plugins
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.14.0",
