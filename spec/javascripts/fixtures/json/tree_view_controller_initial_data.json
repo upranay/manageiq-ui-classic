@@ -228,7 +228,11 @@
         }
     ]
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
 }
 >>>>>>> 1e0379efd... Added specs for treeViewController partial update.
+=======
+}
+>>>>>>> 52c891ec4... Removed es6 parameter assignment.
