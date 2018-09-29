@@ -1564,6 +1564,7 @@ class CatalogController < ApplicationController
   def available_job_templates(manager_id)
     @edit[:new][:available_templates] = []
 <<<<<<< HEAD
+<<<<<<< HEAD
     all_job_templates, all_workflow_templates = fetch_all_templates(manager_id)
 =======
     all_templates = ExtManagementSystem.find_by(:id => manager_id).send('configuration_scripts').sort_by(&:name)
@@ -1571,6 +1572,9 @@ class CatalogController < ApplicationController
     all_workflow_templates = all_templates.collect { |t| [t.name, t.id] if t.type == 'ManageIQ::Providers::AnsibleTower::AutomationManager::ConfigurationWorkflow' }.compact
 
 >>>>>>> 1d49f19f9... Fixed Templates drop down in catalog item editor
+=======
+    all_job_templates, all_workflow_templates = fetch_all_templates(manager_id)
+>>>>>>> 75a12c461... Addressed codeclimate warning
     @edit[:new][:available_templates].push(["",
                                             [["<#{_('Choose a Template')}>",
                                               :selected => "<#{_('Choose a Template')}>",
