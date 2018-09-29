@@ -227,4 +227,8 @@
             "class": ""
         }
     ]
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 1e0379efd... Added specs for treeViewController partial update.
