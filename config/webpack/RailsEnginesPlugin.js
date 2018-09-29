@@ -58,6 +58,10 @@ module.exports = class RailsEnginesPlugin {
         targetEngineModules = this.shared.root;
       }
 
+      if (this.shared.packages.includes(packageName)) {
+        targetEngineModules = this.shared.root;
+      }
+
       if (! inNodeModules) {
         const obj = {
           ...request,
