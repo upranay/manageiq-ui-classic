@@ -22,15 +22,7 @@ class TreeBuilderCatalogItems < TreeBuilderCatalogsClass
 
   def x_get_tree_stc_kids(object, count_only)
     templates = if object.id.nil?
-<<<<<<< HEAD
-<<<<<<< HEAD
                   Rbac.filtered(ServiceTemplate, :named_scope => %i(public_service_templates without_service_template_catalog_id))
-=======
-                  Rbac.filtered(ServiceTemplate, :named_scope => [:public_service_templates, :without_service_template_catalog_id])
->>>>>>> f7144c558... replaced where clauses to use named_scope where possible
-=======
-                  Rbac.filtered(ServiceTemplate, :named_scope => %i(public_service_templates without_service_template_catalog_id))
->>>>>>> e61f27397... addressed rubocop/codeclimate warnings
                 else
                   Rbac.filtered(object.service_templates, :named_scope => :public_service_templates)
                 end
