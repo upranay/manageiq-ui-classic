@@ -1220,10 +1220,14 @@ class CatalogController < ApplicationController
     @edit[:new][:fields] = @record.service_templates.collect { |st| [st.name, st.id] }.sort
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     @edit[:new][:available_fields] = Rbac.filtered(ServiceTemplate, :named_scope => %i(displayed public_service_templates without_service_template_catalog_id))
 =======
     @edit[:new][:available_fields] = Rbac.filtered(ServiceTemplate, :named_scope => [:displayed, :public_service_templates, :without_service_template_catalog_id])
 >>>>>>> f7144c558... replaced where clauses to use named_scope where possible
+=======
+    @edit[:new][:available_fields] = Rbac.filtered(ServiceTemplate, :named_scope => %i(displayed public_service_templates without_service_template_catalog_id))
+>>>>>>> e61f27397... addressed rubocop/codeclimate warnings
                                      .collect { |st| [st.name, st.id] }
                                      .sort
 

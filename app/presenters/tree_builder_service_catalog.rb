@@ -26,10 +26,14 @@ class TreeBuilderServiceCatalog < TreeBuilderCatalogsClass
     # only show catalogs nodes that have any servicetemplate records under them
     objects.each do |object|
 <<<<<<< HEAD
+<<<<<<< HEAD
       items = Rbac.filtered(object.service_templates, :named_scope => %i(displayed public_service_templates))
 =======
       items = Rbac.filtered(object.service_templates, :named_scope => [:displayed, :public_service_templates])
 >>>>>>> f7144c558... replaced where clauses to use named_scope where possible
+=======
+      items = Rbac.filtered(object.service_templates, :named_scope => %i(displayed public_service_templates))
+>>>>>>> e61f27397... addressed rubocop/codeclimate warnings
       filtered_objects.push(object) unless items.empty?
     end
     count_only_or_objects(count_only, filtered_objects, 'name')
@@ -37,10 +41,14 @@ class TreeBuilderServiceCatalog < TreeBuilderCatalogsClass
 
   def x_get_tree_stc_kids(object, count_only)
 <<<<<<< HEAD
+<<<<<<< HEAD
     objects = Rbac.filtered(object.service_templates, :named_scope => %i(displayed public_service_templates))
 =======
     objects = Rbac.filtered(object.service_templates, :named_scope => [:displayed, :public_service_templates])
 >>>>>>> f7144c558... replaced where clauses to use named_scope where possible
+=======
+    objects = Rbac.filtered(object.service_templates, :named_scope => %i(displayed public_service_templates))
+>>>>>>> e61f27397... addressed rubocop/codeclimate warnings
     count_only_or_objects(count_only, objects, 'name')
   end
 end
