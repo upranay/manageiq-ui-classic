@@ -1219,7 +1219,11 @@ class CatalogController < ApplicationController
     @edit[:new][:description]  = @record.description
     @edit[:new][:fields] = @record.service_templates.collect { |st| [st.name, st.id] }.sort
 
+<<<<<<< HEAD
     @edit[:new][:available_fields] = Rbac.filtered(ServiceTemplate, :named_scope => %i(displayed public_service_templates without_service_template_catalog_id))
+=======
+    @edit[:new][:available_fields] = Rbac.filtered(ServiceTemplate, :named_scope => [:displayed, :public_service_templates, :without_service_template_catalog_id])
+>>>>>>> f7144c558... replaced where clauses to use named_scope where possible
                                      .collect { |st| [st.name, st.id] }
                                      .sort
 
