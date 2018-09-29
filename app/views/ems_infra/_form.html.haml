@@ -50,6 +50,16 @@
                      "checkchange"                 => "",
                      "selectpicker-for-select-tag" => "")
 
+     .form-group{"ng-class" => "{'has-error': angularForm.api_version.$invalid}", "ng-if" => "emsCommonModel.emstype == 'telefonicA_infra'"}
+       %label.col-md-2.control-label{"for" => "ems_api_version"}
+         = _("API Version")
+       .col-md-8
+         = select_tag('api_version',
+                      options_for_select(@telefonica_api_versions),
+                      "ng-model"                    => "emsCommonModel.api_version",
+                      "checkchange"                 => "",
+                      "selectpicker-for-select-tag" => "")
+
     .form-group{"ng-class" => "{'has-error': angularForm.api_version.$invalid}", "ng-if" => "emsCommonModel.emstype == 'telefonica_infra'"}
       %label.col-md-2.control-label{"for" => "ems_api_version"}
         = _("API Version")

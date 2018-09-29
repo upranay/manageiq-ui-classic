@@ -361,7 +361,7 @@ module Mixins
       end
 
       if @ems.kind_of?(ManageIQ::Providers::Nuage::NetworkManager)
-        amqp_fallback_hostname1 = @ems.connection_configurations.amqp_fallback1 ? @ems.connection_configurations.amqp_fallback1.endpoint.hostname : ""
+        amqp_fallback_hostname1 = @ems.x.amqp_fallback1 ? @ems.connection_configurations.amqp_fallback1.endpoint.hostname : ""
         amqp_fallback_hostname2 = @ems.connection_configurations.amqp_fallback2 ? @ems.connection_configurations.amqp_fallback2.endpoint.hostname : ""
       end
 
