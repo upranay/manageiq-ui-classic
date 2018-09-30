@@ -6,8 +6,6 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
       openstack_infra_providers_exist: false,
       telefonica_infra_providers_exist: false,
       provider_id: '',
-      domain_name: '',
-      project_name: '',
       zone: '',
       tenant_mapping_enabled: false,
       hostname: '',
@@ -30,6 +28,8 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
       security_protocol: '',
       amqp_security_protocol: '',
       provider_region: '',
+      domain_name: '',
+      project_name: '',
       default_userid: '',
       default_password: '',
       amqp_userid: '',
@@ -119,8 +119,6 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
 
       $scope.emsCommonModel.name                            = data.name;
       $scope.emsCommonModel.emstype                         = data.emstype;
-      $scope.emsCommonModel.domain_name                     = data.domain_name;
-      $scope.emsCommonModel.project_name                    = data.project_name;
       $scope.emsCommonModel.zone                            = data.zone;
       $scope.emsCommonModel.tenant_mapping_enabled          = data.tenant_mapping_enabled;
       $scope.emsCommonModel.hostname                        = data.hostname;
@@ -152,6 +150,8 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
       $scope.emsCommonModel.metrics_security_protocol       = data.metrics_security_protocol;
       $scope.emsCommonModel.metrics_tls_ca_certs            = data.metrics_tls_ca_certs;
       $scope.emsCommonModel.provider_region                 = data.provider_region;
+      $scope.emsCommonModel.domain_name                     = data.domain_name;
+      $scope.emsCommonModel.project_name                    = data.project_name;
       $scope.emsCommonModel.default_userid                  = data.default_userid;
       $scope.emsCommonModel.amqp_userid                     = data.amqp_userid;
       $scope.emsCommonModel.console_userid                  = data.console_userid;
@@ -240,8 +240,6 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
       var data = response.data;
 
       $scope.emsCommonModel.emstype                         = '';
-      $scope.emsCommonModel.domain_name                     = '';
-      $scope.emsCommonModel.project_name                    = '';
       $scope.emsCommonModel.zone                            = data.zone;
       $scope.emsCommonModel.tenant_mapping_enabled          = data.tenant_mapping_enabled;
       $scope.emsCommonModel.emstype_vm                      = data.emstype_vm;
@@ -391,6 +389,9 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
       return true;
     } else if($scope.emsCommonModel.emstype === "kubevirt") {
       return true;
+    }else if($scope.emsCommonModel.emstype == "telefonica" && $scope.emsCommonModel.domain_name != '' && $scope.emsCommonModel.project_name != '' &&
+      ($scope.currentTab == "default" )) {
+      return true;
     } else {
       return false;
     }
@@ -503,6 +504,8 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
     }
     $scope.emsCommonModel.default_api_port = "";
     $scope.emsCommonModel.provider_region = "";
+    $scope.emsCommonModel.domain_name = "";
+    $scope.emsCommonModel.project_name = "";
     $scope.emsCommonModel.default_security_protocol = "";
     $scope.emsCommonModel.default_tls_verify = true;
     $scope.emsCommonModel.default_tls_ca_certs = "";
@@ -518,7 +521,7 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
       $scope.emsCommonModel.default_api_port = $scope.getDefaultApiPort($scope.emsCommonModel.emstype);
       $scope.emsCommonModel.event_stream_selection = "ceilometer";
       $scope.emsCommonModel.amqp_security_protocol = 'non-ssl';
-      $scope.emsCommonModel.default_security_protocol = 'ssl';
+      $scope.emsCommonModel.default_security_protocol = 'ssl-with-validation';
       $scope.emsCommonModel.api_version = "v3";
       if ($scope.emsCommonModel.emstype === 'telefonica') {
         $scope.emsCommonModel.tenant_mapping_enabled = false;
@@ -646,7 +649,9 @@ ManageIQ.angular.app.controller('emsCommonFormController', ['$http', '$scope', '
         realm:                     $scope.emsCommonModel.realm,
         azure_tenant_id:           $scope.emsCommonModel.azure_tenant_id,
         subscription:              $scope.emsCommonModel.subscription,
-        provider_region:           $scope.emsCommonModel.provider_region
+        provider_region:           $scope.emsCommonModel.provider_region,
+        domain_name:               $scope.emsCommonModel.domain_name,
+        project_name:              $scope.emsCommonModel.project_name
       };
     } else if (prefix === "amqp") {
       if ($scope.newRecord) {
