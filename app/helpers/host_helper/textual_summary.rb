@@ -74,19 +74,9 @@ module HostHelper::TextualSummary
     TextualMultilink.new(_("OpenStack Service Status"), :items => textual_generate_openstack_status)
   end
 
-  def textual_group_telefonica_service_status
-    return nil unless @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::Host)
-    TextualMultilink.new(_("OpenStack Service Status"), :items => textual_generate_telefonica_status)
-  end
-
   def textual_group_openstack_hardware_status
     return nil unless @record.kind_of?(ManageIQ::Providers::Openstack::InfraManager::Host)
     TextualGroup.new(_("Openstack Hardware"), %i(introspected provision_state))
-  end
-
-  def textual_group_telefonica_hardware_status
-    return nil unless @record.kind_of?(ManageIQ::Providers::Telefonica::InfraManager::Host)
-    TextualGroup.new(_("Telefonica Hardware"), %i(introspected provision_state))
   end
 
   #
@@ -104,32 +94,32 @@ module HostHelper::TextualSummary
                  :value => _("Running (%{number})") % {:number => running_count},
                  :icon  => failed_count == 0 && running_count > 0 ? 'pficon pficon-ok' : nil,
                  :link  => running_count > 0 ? url_for_only_path(:controller => controller.controller_name,
-                                                      :action => 'host_services', :id => @record,
-                                                      :db => controller.controller_name, :host_service_group => x.id,
-                                                      :status => :running) : nil}
+                                                                 :action => 'host_services', :id => @record,
+                                                                 :db => controller.controller_name, :host_service_group => x.id,
+                                                                 :status => :running) : nil}
 
       failed = {:title => _("Show list of failed %{name}") % {:name => x.name},
                 :value => _("Failed (%{number})") % {:number => failed_count},
                 :icon  => failed_count > 0 ? 'pficon pficon-error-circle-o' : nil,
                 :link  => failed_count > 0 ? url_for_only_path(:controller => controller.controller_name,
-                                                    :action => 'host_services', :id => @record,
-                                                    :db => controller.controller_name, :host_service_group => x.id,
-                                                    :status => :failed) : nil}
+                                                               :action => 'host_services', :id => @record,
+                                                               :db => controller.controller_name, :host_service_group => x.id,
+                                                               :status => :failed) : nil}
 
       all = {:title => _("Show list of all %{name}") % {:name => x.name},
              :value => _("All (%{number})") % {:number => all_count},
              :icon  => 'pficon pficon-service',
              :link  => all_count > 0 ? url_for_only_path(:controller => controller.controller_name, :action => 'host_services',
-                                              :id => @record, :db => controller.controller_name,
-                                              :host_service_group => x.id, :status => :all) : nil}
+                                                         :id => @record, :db => controller.controller_name,
+                                                         :host_service_group => x.id, :status => :all) : nil}
 
       configuration = {:title => _("Show list of configuration files of %{name}") % {:name => x.name},
                        :icon  => 'fa fa-file-o',
                        :value => _("Configuration (%{number})") % {:number => configuration_count},
                        :link  => configuration_count > 0 ? url_for_only_path(:controller => controller.controller_name,
-                                                                  :action => 'filesystems', :id => @record,
-                                                                  :db => controller.controller_name,
-                                                                  :host_service_group => x.id) : nil}
+                                                                             :action => 'filesystems', :id => @record,
+                                                                             :db => controller.controller_name,
+                                                                             :host_service_group => x.id) : nil}
 
       sub_items = [running, failed, all, configuration]
 
@@ -148,32 +138,32 @@ module HostHelper::TextualSummary
                  :value => _("Running (%{number})") % {:number => running_count},
                  :icon  => failed_count == 0 && running_count > 0 ? 'pficon pficon-ok' : nil,
                  :link  => running_count > 0 ? url_for_only_path(:controller => controller.controller_name,
-                                                      :action => 'host_services', :id => @record,
-                                                      :db => controller.controller_name, :host_service_group => x.id,
-                                                      :status => :running) : nil}
+                                                                 :action => 'host_services', :id => @record,
+                                                                 :db => controller.controller_name, :host_service_group => x.id,
+                                                                 :status => :running) : nil}
 
       failed = {:title => _("Show list of failed %{name}") % {:name => x.name},
                 :value => _("Failed (%{number})") % {:number => failed_count},
                 :icon  => failed_count > 0 ? 'pficon pficon-error-circle-o' : nil,
                 :link  => failed_count > 0 ? url_for_only_path(:controller => controller.controller_name,
-                                                    :action => 'host_services', :id => @record,
-                                                    :db => controller.controller_name, :host_service_group => x.id,
-                                                    :status => :failed) : nil}
+                                                               :action => 'host_services', :id => @record,
+                                                               :db => controller.controller_name, :host_service_group => x.id,
+                                                               :status => :failed) : nil}
 
       all = {:title => _("Show list of all %{name}") % {:name => x.name},
              :value => _("All (%{number})") % {:number => all_count},
              :icon  => 'pficon pficon-service',
              :link  => all_count > 0 ? url_for_only_path(:controller => controller.controller_name, :action => 'host_services',
-                                              :id => @record, :db => controller.controller_name,
-                                              :host_service_group => x.id, :status => :all) : nil}
+                                                         :id => @record, :db => controller.controller_name,
+                                                         :host_service_group => x.id, :status => :all) : nil}
 
       configuration = {:title => _("Show list of configuration files of %{name}") % {:name => x.name},
                        :icon  => 'fa fa-file-o',
                        :value => _("Configuration (%{number})") % {:number => configuration_count},
                        :link  => configuration_count > 0 ? url_for_only_path(:controller => controller.controller_name,
-                                                                  :action => 'filesystems', :id => @record,
-                                                                  :db => controller.controller_name,
-                                                                  :host_service_group => x.id) : nil}
+                                                                             :action => 'filesystems', :id => @record,
+                                                                             :db => controller.controller_name,
+                                                                             :host_service_group => x.id) : nil}
 
       sub_items = [running, failed, all, configuration]
 
@@ -409,7 +399,7 @@ module HostHelper::TextualSummary
     h = {:label => _("Firewall Rules"), :icon => "ff ff-firewall", :value => num}
     if num > 0
       h[:title] = n_("Show the Firewall Rule defined on this %{title}",
-                    "Show the Firewall Rules defined on this %{title}", num) % {:title => host_title}
+                     "Show the Firewall Rules defined on this %{title}", num) % {:title => host_title}
       h[:link]  = url_for_only_path(:action => 'firewall_rules', :id => @record, :db => controller.controller_name)
     end
     h
