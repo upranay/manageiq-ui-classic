@@ -66,7 +66,7 @@
     var openstackAndNew = (this.model.emstype === 'openstack_infra') && this.newRecord;
     var telefonicaAndNew = (this.model.emstype === 'telefonica_infra') && this.newRecord;
     var rhevm = this.model.emstype === 'rhevm';
-    return ! ((openstackAndNew || rhevm) && tab === 'ssh_keypair');
+    return ! ((openstackInfraAndNew || openstackCloud || rhevm) && tab === 'ssh_keypair');
   };
 
   EmsKeypairController.$inject = ["$scope"];
