@@ -686,7 +686,7 @@ class ApplicationController < ActionController::Base
       if !k.to_s.ends_with?("password2", "verify") &&
          (current.nil? || (new[k] != current[k]))
         if password_field?(k) # Asterisk out password fields
-          msg_arr << "#{k}:[*]#{' to [*]' unless current.nil?}"
+          msg_arr << "#{k}:[*]" + (current.nil? ? '' : ' to [*]')
         elsif new[k].kind_of?(Hash) # If the field is a hash,
           # Make current a blank hash for following comparisons
           current[k] = {} if !current.nil? && current[k].nil?
@@ -694,7 +694,7 @@ class ApplicationController < ActionController::Base
           (new[k].keys | (current.nil? ? [] : current[k].keys)).each do |hk|
             next if current.present? && (new[k][hk] == current[k][hk])
             msg_arr << if password_field?(hk) # Asterisk out password fields
-                         "#{hk}:[*]#{' to [*]' unless current.nil?}"
+                         "#{hk}:[*]" + (current.nil? ? '' :  ' to [*]')
                        else
                          "#{hk}:[" + (current.nil? ? "" : "#{filter_config(current[k][hk])}] to [") +
                          "#{filter_config(new[k][hk])}]"
@@ -1869,11 +1869,12 @@ class ApplicationController < ActionController::Base
     @panels["tag_filters"] = true if @panels["tag_filters"].nil?  # Default tag filters panels to be open
     @panels["sections"] = true if @panels["sections"].nil?        # Default sections(compare) panel to be open
 
-    #   if params[:flash_msgs] && session[:flash_msgs]    # Incoming flash msg array is present
-    if session[:flash_msgs]       # Incoming flash msg array is present
+    # Incoming flash msg array is present
+    if session[:flash_msgs]
       @flash_array = session[:flash_msgs].dup
       session[:flash_msgs] = nil
-    elsif params[:flash_msg]      # Add incoming flash msg, with/without error flag
+    # Add incoming flash msg, with/without error flag
+    elsif params[:flash_msg]
       # params coming in from redirect are strings and being sent up even when value is false
       if params[:flash_error] == "true"
         add_flash(params[:flash_msg], :error)

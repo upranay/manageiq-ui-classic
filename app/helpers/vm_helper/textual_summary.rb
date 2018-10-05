@@ -150,7 +150,7 @@ module VmHelper::TextualSummary
         else
           ""
         end
-      cpus = n_('CPU', 'CPUs', @record.cpu_total_cores)
+      cpus = n_("%{cpu} CPU", "%{cpu} CPUs", @record.cpu_total_cores) % {:cpu => @record.cpu_total_cores}
       h[:value] = "#{vendor}: #{cpus}#{cpu_details}, #{@record.mem_cpu} MB"
     end
     h
@@ -257,7 +257,7 @@ module VmHelper::TextualSummary
       main = @record.storage
       h[:value] = storages.sort_by { |s| s.name.downcase }.collect do |s|
         {:icon  => "fa fa-database",
-         :value => "#{s.name}#{" (main)" if s == main}",
+         :value => s.name + (s == main ? ' (main)' : ''),
          :title => _("Show this VM's Datastores"),
          :link  => url_for_only_path(:controller => 'storage', :action => 'show', :id => s)}
       end
