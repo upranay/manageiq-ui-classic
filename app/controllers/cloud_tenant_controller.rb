@@ -1,5 +1,4 @@
 class CloudTenantController < ApplicationController
-  include Mixins::GenericShowMixin
   before_action :check_privileges
   before_action :get_session_data
   after_action :cleanup_action
@@ -9,6 +8,8 @@ class CloudTenantController < ApplicationController
   include Mixins::GenericButtonMixin
   include Mixins::GenericFormMixin
   include Mixins::GenericSessionMixin
+  include Mixins::DashboardViewMixin
+  include Mixins::GenericShowMixin
 
   # handle buttons pressed on the button bar
   def button
@@ -179,17 +180,7 @@ class CloudTenantController < ApplicationController
 
   def delete_cloud_tenants
     assert_privileges("cloud_tenant_delete")
-
-    tenants = if @lastaction == "show_list" || (@lastaction == "show" && @layout != "cloud_tenant")
-                find_checked_records_with_rbac(CloudTenant)
-              else
-                [find_record_with_rbac(CloudTenant, params[:id])]
-              end
-
-    if tenants.empty?
-      add_flash(_("No Cloud Tenants were selected for deletion."), :error)
-    end
-
+    tenants = find_records_with_rbac(CloudTenant, checked_or_params)
     tenants_to_delete = []
     tenants.each do |tenant|
       if tenant.vms.present?

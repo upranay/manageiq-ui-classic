@@ -1,7 +1,6 @@
-/* global miqAjaxButton miqBuildCalendar miqButtons miqJqueryRequest miqRESTAjaxButton miqSparkleOff miqSparkleOn
-add_flash miqFlashLater miqFlashSaved */
+/* global miqAjaxButton miqBuildCalendar miqButtons miqJqueryRequest miqRESTAjaxButton miqSparkleOff miqSparkleOn add_flash miqFlashLater miqFlashSaved */
 
-ManageIQ.angular.app.service('miqService', ['$timeout', '$document', '$q', 'API', '$window', function($timeout, $document, $q, API, $window) {
+ManageIQ.angular.app.service('miqService', ['$q', 'API', '$window', function($q, API, $window) {
   var miqService = this;
 
   this.storedPasswordPlaceholder = '●●●●●●●●';
@@ -70,15 +69,6 @@ ManageIQ.angular.app.service('miqService', ['$timeout', '$document', '$q', 'API'
     return form.$valid && form.$dirty;
   };
 
-  this.dynamicAutoFocus = function(element) {
-    $timeout(function() {
-      var queryResult = $document[0].getElementById(element);
-      if (queryResult) {
-        queryResult.focus();
-      }
-    }, 200);
-  };
-
   this.detectWithRest = function($event, url) {
     angular.element('#button_name').val('detect');
     miqSparkleOn();
@@ -103,9 +93,9 @@ ManageIQ.angular.app.service('miqService', ['$timeout', '$document', '$q', 'API'
       .catch(options.handleFailure);
   };
 
-  this.validateWithAjax = function(url) {
+  this.validateWithAjax = function(url, model) {
     miqSparkleOn();
-    miqAjaxButton(url, true);
+    miqAjaxButton(url, model || true);
   };
 
   this.validateWithREST = function($event, credType, url, formSubmit) {
