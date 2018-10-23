@@ -37,8 +37,8 @@ class EmsCloudDashboardService < EmsDashboardService
     attr_url = {
       :flavors            => "flavors",
       :cloud_tenants      => "cloud_tenants",
-      :miq_templates      => "miq_templates",
-      :vms                => "vms",
+      :miq_templates      => "images",
+      :vms                => "instances",
       :availability_zones => "availability_zones",
       :security_groups    => "security_groups",
       :cloud_networks     => "cloud_networks",
@@ -46,14 +46,14 @@ class EmsCloudDashboardService < EmsDashboardService
     }
 
     attr_hsh = {
-      :flavors            => "Flavors",
-      :cloud_tenants      => "Cloud Tenants",
-      :miq_templates      => "Images",
-      :vms                => "Instances",
-      :availability_zones => "Availability Zones",
-      :security_groups    => "Security Groups",
-      :cloud_networks     => "Cloud Networks",
-      :cloud_volumes      => "Cloud Volumes"
+      :flavors            => _("Flavors"),
+      :cloud_tenants      => _("Cloud Tenants"),
+      :miq_templates      => _("Images"),
+      :vms                => _("Instances"),
+      :availability_zones => _("Availability Zones"),
+      :security_groups    => _("Security Groups"),
+      :cloud_networks     => _("Cloud Networks"),
+      :cloud_volumes      => _("Cloud Volumes")
     }
 
     format_data('ems_cloud', attributes, attr_icon, attr_url, attr_hsh)

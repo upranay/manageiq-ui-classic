@@ -12,7 +12,6 @@
  *= require codemirror/lib/codemirror
  *= require codemirror/theme/eclipse
  *= require kubernetes-topology-graph/dist/topology-graph
- *= require ./wizard
  *= require ./timeline
  *= require ./topology
  *= require ./container_topology
@@ -20,7 +19,7 @@
  *= require ./metrics
  *= require ./service_dialogs
  *= require @pf3/timeline/style
- *= require bower_components/manageiq-ui-components/dist/css/ui-components
+ *= require @manageiq/ui-components/dist/css/ui-components
  *= require ui-select/dist/select
  *= require ./remote_console
  *= require graphiql/graphiql.css

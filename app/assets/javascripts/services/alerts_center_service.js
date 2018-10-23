@@ -452,10 +452,9 @@ function alertsCenterService(API, $q, $timeout, $document, $uibModal, $http) {
 
   function updateAlertStatus(updateAlert) {
     if (updateAlert && updateAlert.alert_actions && updateAlert.alert_actions.length > 0) {
-      var i;
       var actionUser;
 
-      for (i = 0; i < updateAlert.alert_actions.length; i++) {
+      for (var i = 0; i < updateAlert.alert_actions.length; i++) {
         updateAlert.alert_actions[i].created_at = convertApiTime(updateAlert.alert_actions[i].created_at);
         updateAlert.alert_actions[i].updated_at = convertApiTime(updateAlert.alert_actions[i].updated_at);
       }
@@ -470,7 +469,7 @@ function alertsCenterService(API, $q, $timeout, $document, $uibModal, $http) {
 
       // update each state
       updateAlert.numComments = 0;
-      for (i = 0; i < updateAlert.alert_actions.length; i++) {
+      for (var i = 0; i < updateAlert.alert_actions.length; i++) {
         actionUser = _this.getUserByIdOrUserId(updateAlert.alert_actions[i].user_id);
         updateAlert.alert_actions[i].username = actionUser !== undefined ? actionUser.name : '';
 
@@ -502,7 +501,7 @@ function alertsCenterService(API, $q, $timeout, $document, $uibModal, $http) {
       objectName: objectName,
       objectType: objectType,
       objectTypeImg: _this.icons[objectClassifiedType],
-      objectLink: '/ems_container/' + alertData.ems_id,
+      objectLink: '/restful_redirect/index?model=ExtManagementSystem&id=' + alertData.ems_id,
       sopLink: alertData.url,
       evaluated_on: convertApiTime(alertData.evaluated_on),
       severity: alertData.severity,
@@ -532,7 +531,6 @@ function alertsCenterService(API, $q, $timeout, $document, $uibModal, $http) {
     }
 
     updateAlertStatus(newAlert);
-
     return newAlert;
   }
 
