@@ -442,6 +442,7 @@ class CatalogController < ApplicationController
     rearrange_groups_array
     build_ae_tree(:catalog, :automate_tree) # Build Catalog Items tree
     changed = (@edit[:new] != @edit[:current])
+    @available_catalogs = available_catalogs.sort # Get available catalogs with tenants and ancestors
     render :update do |page|
       page << javascript_prologue
       page.replace("basic_info_div", :partial => "form_basic_info")
@@ -552,7 +553,7 @@ class CatalogController < ApplicationController
       options[:dialog_locals] = DialogLocalService.new.determine_dialog_locals_for_svc_catalog_provision(
         ra, st, svc_catalog_provision_finish_submit_endpoint
       )
-
+      @in_a_form = true
       if Settings.product.old_dialog_user_ui
         dialog_initialize(ra, options)
       else
