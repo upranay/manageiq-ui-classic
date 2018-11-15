@@ -163,6 +163,7 @@
                             "id"                      => "ems_region_input",
                             "name"                    => "provider_region",
                             "ng-model"                => "emsCommonModel.provider_region",
+                            "required"                => true,
                             "checkchange"             => ""}
 
     .form-group{"ng-class" => "{'has-error': angularForm.keystone_v3_domain_id.$invalid}", "ng-if" => "emsCommonModel.api_version == 'v3' && (emsCommonModel.emstype == 'openstack' || emsCommonModel.emstype == 'openstack_infra')"}
@@ -218,8 +219,6 @@
                             "maxlength"   => "#{ViewHelper::MAX_NAME_LEN}",
                             "required"    => "",
                             "checkchange" => ""}
-        %span.help-block{"ng-show" => "angularForm.domain_name.$error.required"}
-          = _("Required")
 
     .form-group{"ng-class" => "{'has-error': angularForm.project_name.$invalid}", "ng-if" => "emsCommonModel.emstype == 'telefonica'"}
       %label.col-md-2.control-label{"for" => "ems_project_name"}
@@ -232,8 +231,6 @@
                             "maxlength"   => "#{ViewHelper::MAX_NAME_LEN}",
                             "required"    => "",
                             "checkchange" => ""}
-        %span.help-block{"ng-show" => "angularForm.project_name.$error.required"}
-          = _("Required")
 
     .form-group{"ng-class" => "{'has-error': angularForm.zone.$invalid}"}
       %label.col-md-2.control-label{"for" => "ems_zone"}
