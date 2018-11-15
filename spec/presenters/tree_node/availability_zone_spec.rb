@@ -7,6 +7,8 @@ describe TreeNode::AvailabilityZone do
     availability_zone_google
     availability_zone_openstack
     availability_zone_openstack_null
+    availability_zone_telefonica
+    availability_zone_telefonica_null
     availability_zone_vmware
   ).each do |factory|
     klass = FactoryGirl.factory_by_name(factory).instance_variable_get(:@class_name)

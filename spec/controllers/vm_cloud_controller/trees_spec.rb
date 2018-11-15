@@ -16,6 +16,8 @@ describe VmCloudController do
       it "renders list of #{elements} for #{tree} root node" do
         FactoryGirl.create(:vm_openstack)
         FactoryGirl.create(:template_openstack)
+        # FactoryGirl.create(:vm_telefonica)
+        # FactoryGirl.create(:template_telefonica)
 
         session[:settings] = {}
         seed_session_trees('vm_cloud', tree.to_sym)
@@ -29,6 +31,7 @@ describe VmCloudController do
 
     [
       %w(vm_openstack Openstack),
+      %w(vm_telefonica Telefonica),
       %w(vm_azure Azure),
       %w(vm_google Google),
       %w(vm_amazon Amazon)

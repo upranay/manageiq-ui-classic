@@ -19,4 +19,15 @@ describe "layouts/listnav/_availability_zone.html.haml" do
     render
     expect(response).to include("Show this Availability Zone&#39;s parent Cloud Provider\" href=\"/ems_cloud/#{@record.ext_management_system.id}\">")
   end
+
+  let(:provider) do
+    allow_any_instance_of(User).to receive(:get_timezone).and_return(Time.zone)
+    FactoryGirl.create(:ems_telefonica)
+  end
+
+  it "link to parent cloud provider uses restful path" do
+    @record = FactoryGirl.create(:availability_zone_telefonica, :ext_management_system => provider, :name => 'A test')
+    render
+    expect(response).to include("Show this Availability Zone&#39;s parent Cloud Provider\" href=\"/ems_cloud/#{@record.ext_management_system.id}\">")
+  end
 end

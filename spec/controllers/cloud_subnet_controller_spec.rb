@@ -1,6 +1,8 @@
 describe CloudSubnetController do
   let(:ems) { FactoryGirl.create(:ems_openstack).network_manager }
   let(:cloud_subnet) { FactoryGirl.create(:cloud_subnet_openstack, :ext_management_system => ems) }
+  let(:ems) { FactoryGirl.create(:ems_telefonica).network_manager }
+  let(:cloud_subnet) { FactoryGirl.create(:cloud_subnet_telefonica, :ext_management_system => ems) }
 
   before { EvmSpecHelper.create_guid_miq_server_zone }
 
@@ -100,6 +102,7 @@ describe CloudSubnetController do
 
   describe "#create" do
     let(:cloud_subnet) { FactoryGirl.create(:cloud_subnet_openstack) }
+    let(:cloud_subnet) { FactoryGirl.create(:cloud_subnet_telefonica) }
     let(:task_options) do
       {
         :action => "creating Cloud Subnet for user %{user}" % {:user => controller.current_user.userid},
@@ -108,6 +111,7 @@ describe CloudSubnetController do
     end
     let(:cloud_tenant) { FactoryGirl.create(:cloud_tenant) }
     let(:cloud_network) { FactoryGirl.create(:cloud_network_openstack) }
+    let(:cloud_network) { FactoryGirl.create(:cloud_network_telefonica) }
     let(:queue_options) do
       {
         :class_name  => ems.class.name,
@@ -223,6 +227,7 @@ describe CloudSubnetController do
   end
 
   include_examples '#download_summary_pdf', :cloud_subnet_openstack
+  include_examples '#download_summary_pdf', :cloud_subnet_telefonica
 
-  include_examples :shared_examples_for_cloud_subnet_controller, %w(openstack azure google amazon)
+  include_examples :shared_examples_for_cloud_subnet_controller, %w(openstack telefonica azure google amazon)
 end

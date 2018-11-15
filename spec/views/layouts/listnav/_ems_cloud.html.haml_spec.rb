@@ -40,7 +40,7 @@ describe "layouts/listnav/_ems_cloud.html.haml" do
     expect(response).to include "ems_cloud/#{record.id}?display=availability_zones"
   end
 
-  it "Availability Zones link uses restful paths for telefonica" do
+  it "Availability Zones link uses restful paths" do
     record = FactoryGirl.create(:ems_telefonica)
     assign(:record, record)
     allow(record).to receive(:availability_zones).and_return(14)

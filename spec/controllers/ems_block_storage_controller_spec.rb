@@ -1,5 +1,6 @@
 describe EmsBlockStorageController do
   include_examples :shared_examples_for_ems_block_storage_controller, %w(openstack)
+  include_examples :shared_examples_for_ems_block_storage_controller, %w(telefonica)
 
   describe "#check_generic_rbac" do
     let(:feature) { %w(cloud_subnet_new) }
