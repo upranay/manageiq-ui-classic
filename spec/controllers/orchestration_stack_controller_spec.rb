@@ -116,7 +116,6 @@ describe OrchestrationStackController do
       expect(ret).to have_key('template_description')
       expect(ret).to have_key('template_draft')
       expect(ret).to have_key('template_content')
-
     end
   end
 
