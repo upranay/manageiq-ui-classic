@@ -420,7 +420,7 @@ module OpsController::Diagnostics
       zone = Zone.find_by_id(x_node.split("-").last)
       @view, @pages = get_view(MiqServer, :named_scope => [[:with_zone_id, zone.id]]) # Get the records (into a view) and the paginator
     else
-      @view, @pages = get_view(MiqServer) # Get the records (into a view) and the paginator
+      @view, @pages = get_view(MiqServer, :named_scope => [:in_my_region]) # Get the records (into a view) and the paginator
     end
     @no_checkboxes = @showlinks = true
     @items_per_page = ApplicationController::ONE_MILLION
@@ -894,7 +894,10 @@ module OpsController::Diagnostics
   end
 
   def build_supported_depots_for_select
-    @supported_depots_for_select = FileDepot.supported_depots.values.sort
+    depots_for_select = FileDepot.supported_depots.values.sort
+    # S3 and Swift not currently supported for Log Collection
+    not_supported_depots = ["AWS S3", "OpenStack Swift"]
+    @supported_depots_for_select = depots_for_select - not_supported_depots
   end
 
   def set_credentials

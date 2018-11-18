@@ -82,6 +82,10 @@ describe('emsCommonFormController', function() {
     it('sets the api_version to v2', function() {
       expect($scope.emsCommonModel.api_version).toEqual('v2');
     });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
+    });
   });
 
   describe('when the emsCommonFormId is an Amazon Id', function() {
@@ -151,6 +155,10 @@ describe('emsCommonFormController', function() {
 
     it('sets the default_url', function() {
       expect($scope.emsCommonModel.default_url).toEqual("http://host.test/abc");
+    });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
     });
 
     it('initializes $scope.postValidationModel with credential objects for only those providers that support validation', function () {
@@ -229,6 +237,10 @@ describe('emsCommonFormController', function() {
     it('sets the default_password', function() {
       expect($scope.emsCommonModel.default_password).toEqual(miqService.storedPasswordPlaceholder);
     });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
+    });
   });
 
   describe('when the emsCommonFormId is an Azure Id', function() {
@@ -294,6 +306,22 @@ describe('emsCommonFormController', function() {
 
     it('sets the default_password', function() {
       expect($scope.emsCommonModel.default_password).toEqual(miqService.storedPasswordPlaceholder);
+    });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
+    });
+  });
+
+  describe('#providerTypeChanged', function() {
+    beforeEach(function() {
+      $httpBackend.flush();
+      $scope.emsCommonModel.emstype = 'gce';
+      $scope.providerTypeChanged();
+    });
+
+    it('sets currentTab to service_account', function() {
+      expect($scope.currentTab).toEqual('service_account');
     });
   });
 
@@ -485,6 +513,10 @@ describe('emsCommonFormController in the context of container provider', functio
     it('sets the api_version to v2', function () {
       expect($scope.emsCommonModel.api_version).toEqual('v2');
     });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
+    });
   });
 
   describe('when the emsCommonFormId of existing provider', function () {
@@ -535,6 +567,10 @@ describe('emsCommonFormController in the context of container provider', functio
 
     it('sets the provider options to expected value', function () {
       expect($scope.emsOptionsModel.provider_options_original_values).toEqual(basic_options_example);
+    });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
     });
   });
 
@@ -680,6 +716,10 @@ describe('emsCommonFormController in the context of ems infra provider', functio
     it('sets the api_version to v2', function () {
       expect($scope.emsCommonModel.api_version).toEqual('v2');
     });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
+    });
   });
 
   describe('when the emsCommonFormId is an SCVMM Id', function () {
@@ -732,6 +772,10 @@ describe('emsCommonFormController in the context of ems infra provider', functio
 
     it('sets the default_password', function () {
       expect($scope.emsCommonModel.default_password).toEqual(miqService.storedPasswordPlaceholder);
+    });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
     });
   });
 
@@ -807,6 +851,10 @@ describe('emsCommonFormController in the context of ems infra provider', functio
     it('sets the ssh_keypair_password', function () {
       expect($scope.emsCommonModel.ssh_keypair_password).toEqual(miqService.storedPasswordPlaceholder);
     });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
+    });
   });
 
   describe('when the emsCommonFormId is a RHEV Id', function () {
@@ -865,6 +913,10 @@ describe('emsCommonFormController in the context of ems infra provider', functio
     it('sets the default api port', function () {
       expect($scope.emsCommonModel.default_api_port).toEqual('');
     });
+
+    it('sets the current tab to default', function() {
+      expect($scope.currentTab).toEqual('default');
+    });
   });
 
   describe('when the emsCommonFormId is a Kubevirt Id', function () {
@@ -874,6 +926,7 @@ describe('emsCommonFormController in the context of ems infra provider', functio
       kubevirt_hostname: '10.22.33.44',
       emstype: 'kubevirt',
       zone: 'default',
+      non_default_current_tab: 'kubevirt',
       kubevirt_api_port: '8443',
       kubevirt_password_exists: true,
       kubevirt_security_protocol: 'ssl-with-validation-custom-ca',
@@ -927,6 +980,10 @@ describe('emsCommonFormController in the context of ems infra provider', functio
 
     it('sets the kubevirt certificate', function () {
       expect($scope.emsCommonModel.kubevirt_tls_ca_certs).toEqual('-----BEGIN DUMMY...');
+    });
+
+    it('sets the current tab to kubevirt', function() {
+      expect($scope.currentTab).toEqual('kubevirt');
     });
   });
 });

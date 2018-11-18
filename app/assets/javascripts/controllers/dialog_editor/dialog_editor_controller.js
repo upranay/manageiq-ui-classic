@@ -29,7 +29,7 @@ ManageIQ.angular.app.controller('dialogEditorController', ['$window', 'miqServic
           'dialog_groups': [{
             'label': __('New section'),
             'position': 0,
-            'dialog_fields': []
+            'dialog_fields': [],
           }],
         }],
       }],
@@ -65,6 +65,8 @@ ManageIQ.angular.app.controller('dialogEditorController', ['$window', 'miqServic
     translateResponderNamesToIds(dialog.content[0]);
 
     if (requestDialogAction() === 'copy') {
+      // gettext left out intentionally
+      // the label will be rendered to all users in all locales as it was saved
       dialog.label = dialog.content[0].label = "Copy of " + dialog.label;
     }
 
@@ -84,7 +86,7 @@ ManageIQ.angular.app.controller('dialogEditorController', ['$window', 'miqServic
         return key in value;
       });
 
-    if (! useCustomizer) {
+    if (!useCustomizer) {
       return undefined;
     }
 

@@ -76,7 +76,7 @@ class PlanningController < ApplicationController
     @sb[:options][:trend_storage] = (params[:trend_storage] == "1") if params[:trend_storage]
     @sb[:options][:tz] = params[:planning_tz] if params[:planning_tz]
     if params.key?(:time_profile)
-      tp = TimeProfile.find(params[:time_profile]) unless params[:time_profile].blank?
+      tp = TimeProfile.find(params[:time_profile]) if params[:time_profile].present?
       @sb[:options][:time_profile] = params[:time_profile].blank? ? nil : params[:time_profile].to_i
       @sb[:options][:time_profile_tz] = params[:time_profile].blank? ? nil : tp.tz
       @sb[:options][:time_profile_days] = params[:time_profile].blank? ? nil : tp.days
@@ -86,7 +86,7 @@ class PlanningController < ApplicationController
       @sb[:options][:target_filters] = MiqSearch.where(:id => params[:target_typ]).descriptions
       @sb[:options][:target_filter] = nil
     end
-    @sb[:options][:target_filter] = params[:target_filter].blank? ? nil : params[:target_filter] if params.key?(:target_filter)
+    @sb[:options][:target_filter] = params[:target_filter].presence if params.key?(:target_filter)
     @sb[:options][:limit_cpu] = params[:limit_cpu].to_i if params[:limit_cpu]
     @sb[:options][:limit_vcpus] = params[:limit_vcpus].to_i if params[:limit_vcpus]
     @sb[:options][:limit_memory] = params[:limit_memory].to_i if params[:limit_memory]
@@ -146,16 +146,7 @@ class PlanningController < ApplicationController
     @sb[:rpt].title = _("Counts of VMs (%{profile})") % {:profile => profile.join(", ")}
     filename = "VM Counts per #{ui_lookup(:model => @sb[:options][:target_typ])}"
     disable_client_cache
-    case params[:typ]
-    when "txt"
-      send_data(@sb[:rpt].to_text,
-                :filename => "#{filename}.txt")
-    when "csv"
-      send_data(@sb[:rpt].to_csv,
-                :filename => "#{filename}.csv")
-    when "pdf"
-      render_pdf(@sb[:rpt])
-    end
+    download_file(params[:typ], @sb[:rpt], filename)
   end
 
   def reset

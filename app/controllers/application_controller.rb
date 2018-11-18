@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
     # web service worker processes.
     protect_from_forgery(:secret => SecureRandom.hex(64),
                          :except => %i(authenticate external_authenticate kerberos_authenticate saml_login initiate_saml_login oidc_login initiate_oidc_login csp_report),
-                         :with   => :exception)
+                         :with   => :reset_session)
 
   end
 
@@ -38,6 +38,7 @@ class ApplicationController < ActionController::Base
   include Mixins::CustomButtons
   include Mixins::CheckedIdMixin
   include ParamsHelper
+  include ApplicationHelper::Toolbar::Mixins::CustomButtonToolbarMixin
 
   helper ToolbarHelper
   helper JsHelper
@@ -1387,7 +1388,7 @@ class ApplicationController < ActionController::Base
        (action_name == "show_list" && !session[:menu_click])
       adv_search_build(db)
     end
-    if @edit && !@edit[:selected] && # Load default search if search @edit hash exists
+    if @edit && !@edit[:selected] && !@edit[:tagging] && # Load default search if search @edit hash exists
        settings(:default_search, db.to_sym) # and item in listnav not selected
       load_default_search(settings(:default_search, db.to_sym))
     end
