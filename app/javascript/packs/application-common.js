@@ -7,13 +7,12 @@
 // layout file, like app/views/layouts/application.html.erb
 
 import 'proxy-polyfill';
-
-import { mount } from '../react/mounter';
-import componentRegistry from '../react/componentRegistry';
+import { Spinner } from 'spin.js';
+import 'spin.js/spin.css';
 import { API, http } from '../http_api';
 
-import * as newRegistry from '../miq-component/registry';
-import reactBlueprint from '../miq-component/react-blueprint';
+import * as newRegistry from '../miq-component/registry.ts';
+import reactBlueprint from '../miq-component/react-blueprint.tsx';
 import * as helpers from '../miq-component/helpers';
 
 import { rxSubject, sendDataWithRx, listenToRx } from '../miq_observable';
@@ -21,11 +20,7 @@ import { rxSubject, sendDataWithRx, listenToRx } from '../miq_observable';
 import { initializeStore } from '../miq-redux';
 import { history } from '../miq-component/react-history.ts';
 import createReduxRoutingActions from '../miq-redux/redux-router-actions';
-
-ManageIQ.react = {
-  mount,
-  componentRegistry,
-};
+import { formButtonsActionTypes, createFormButtonsActions } from '../forms/form-buttons-reducer';
 
 ManageIQ.component = {
   ...newRegistry,
@@ -40,6 +35,8 @@ ManageIQ.redux = {
   addReducer: store.injectReducers,
   history,
   ...createReduxRoutingActions(store),
+  formButtonsActions: createFormButtonsActions(store),
+  formButtonsActionTypes: { ...formButtonsActionTypes },
 };
 
 ManageIQ.angular.rxSubject = rxSubject;
@@ -57,6 +54,4 @@ require('xml_display/XMLDisplay.js');
 require('xml_display/XMLDisplay.css');
 
 // miqSpinner, miqSearchSpinner
-import {Spinner} from 'spin.js';
-import 'spin.js/spin.css';
 window.Spinner = Spinner;
