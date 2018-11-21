@@ -69,7 +69,6 @@ module HostHelper::TextualSummary
 
   def textual_group_cloud_services
     TextualGroup.new(_("Cloud Services"), textual_openstack_nova_scheduler) if @record.openstack_host?
-    TextualGroup.new(_("Cloud Services"), textual_telefonica_nova_scheduler) if @record.telefonica_host?
   end
 
   def textual_group_openstack_service_status
@@ -505,11 +504,6 @@ module HostHelper::TextualSummary
 
   def textual_openstack_nova_scheduler
     {:label => _("Openstack Nova Scheduler"), :value => openstack_nova_scheduler_value,
-     :link => url_for_only_path(:controller => controller.controller_name, :action => 'host_cloud_services', :id => @record)}
-  end
-
-  def textual_telefonica_nova_scheduler
-    {:label => _("Telefonica Nova Scheduler"), :value => telefonica_nova_scheduler_value,
      :link => url_for_only_path(:controller => controller.controller_name, :action => 'host_cloud_services', :id => @record)}
   end
 
